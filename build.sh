@@ -9,3 +9,5 @@ cmake -B build -DTMXLITE_STATIC_LIB=ON
 cmake --build build
 cd ../../../
 cmake --build cmake-build-debug
+cd ./cmake-build-debug/bin/
+./Climb_Together

@@ -25,8 +25,6 @@ set(SOURCES
     src/Entity/player.cpp
 
     src/World/world.cpp
-    src/World/tile.cpp
-    src/World/grid.cpp
 
     src/Animation/animation.cpp
     src/Animation/animation_component.cpp
@@ -91,15 +89,5 @@ if(UNIX AND NOT APPLE)
     )
 endif()
 
-# Копирование ресурсов
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/resources"
-        "${CMAKE_BINARY_DIR}/resources"
-    COMMENT "Copying resources..."
-)
-
-# Добавляем зависимость от файлов ресурсов
-file(GLOB_RECURSE RESOURCE_FILES "${CMAKE_SOURCE_DIR}/resources/*")
-set_source_files_properties(${RESOURCE_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
+# Копирование ресурсов при конфигурации
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})

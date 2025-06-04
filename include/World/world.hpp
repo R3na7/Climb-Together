@@ -14,7 +14,7 @@ class World {
     struct Tile; 
 public:
     
-    World();
+    World() = default;
     
     World(const World & world) = delete;
     World& operator=(const World &) = delete;
@@ -52,13 +52,17 @@ private:
     std::vector<InteractiveObject> _interactiv_objects;
     Player* _player;
 
+    
     std::vector<Layer> _layers;
     std::vector<Tile> _tiles;
+
+    int _width;
+    int _height;
 
     Texture2D _tileset;
     std::vector<Sound> _background_sounds;
     
-    std::string _world_name;
+    std::string _name;
     bool _is_finished;
 
     struct Layer {
