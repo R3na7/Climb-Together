@@ -80,8 +80,6 @@ void Game::render() {
 
 void Game::updateCamera() {
 
-<<<<<<< HEAD
-=======
     // Получаем размеры карты (предполагая, что у World есть методы getMapWidth() и getMapHeight())
     float mapWidth = _world->getGrid().getWidth() * 256.0f;  // в пикселях
     float mapHeight = _world->getGrid().getHeight() * 256.0f; // в пикселях
@@ -122,5 +120,4 @@ void Game::initGameMenus() {
         MenuType::SETTINGS_MENU,
         GameMenu{std::make_shared<Texture2D>(LoadTexture(RES_PATH"resources/example.jpg"))} 
     );
->>>>>>> d0c1407 (edit)
 }
