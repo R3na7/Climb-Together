@@ -8,7 +8,7 @@ Game::Game()
     , window_height(GetScreenHeight())
     , _menu(std::make_unique<StartMenu>(_isRunning)) {
     SetTargetFPS(120);
-    
+
     _camera = {0};
     _camera.offset = {static_cast<float>(window_width) / 2, static_cast<float>(window_height) / 2}; 
     _camera.target = {0, 0};
@@ -31,8 +31,17 @@ void Game::start() {
 
 
 void Game::update() {
+    // if(_menu->isActive()) {
+    //     _menu->update();
+    // }
+    // else {
 
-    _world.update();
+        _world.update();
+        
+        playerHandleInput();
+        updateCamera();
+
+    //}
 }
 
 void Game::playerHandleInput() {
@@ -52,12 +61,12 @@ void Game::playerHandleInput() {
     }
     if (IsKeyDown(KEY_W)) 
     {
-        _player.move(0, -velocity);
+        _player.move(0.0f, -velocity);
 
     }
     if (IsKeyDown(KEY_S)) 
     {
-        _player.move(0, velocity);
+        _player.move(0.0f, velocity);
 
     }
 }
@@ -66,8 +75,17 @@ void Game::render() {
     BeginDrawing();
     ClearBackground(BLACK);
 
-        _world.render(); 
+    // if(_menu->isActive()) {
+    //     _menu->render();
+    // }
+    // else {
+        BeginMode2D(_camera);
+
+            _world.render(); 
         
+        EndMode2D();
+
+    //}
     EndDrawing();
     
 }

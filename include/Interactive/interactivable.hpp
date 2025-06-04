@@ -8,7 +8,6 @@
 class Interactivable {
 public:
 
-
     Interactivable(float interactive_radius = 100.0f, const std::function<void()> & iteract = [](){});
 
     void onInteract() const;
@@ -31,6 +30,8 @@ protected:
 
 class InteractiveObject : public Entity, public Interactivable {
 public:
+
+    InteractiveObject() = default;
 
     InteractiveObject(const std::array<Texture2D, DIRECTIONS_COUNT> & textures, float _interactive_radius = 100.0f);
 

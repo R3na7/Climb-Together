@@ -83,7 +83,44 @@ bool World::initWorld(const std::string& filename) {
 
                 _layers.push_back(std::move(world_layer));
 
-            }
+            } else if (layer->getType() == tmx::Layer::Type::Object) {
+                const auto & objectGroup = layer->getLayerAs<tmx::ObjectGroup>();
+
+                for (const auto & object : objectGroup.getObjects()) {
+
+                    if (object.getType() == "player" && _player) {
+
+                        _player->setPosition({
+                            object.getPosition().x,
+                            object.getPosition().y
+                        });
+
+                    }
+
+                    if (object.getType() == "entity") {
+
+                        // ????????
+
+                    }
+
+                    if (object.getType() == "interactive_object") {
+
+                        InteractiveObject io;
+
+                        io.setPosition({
+                            object.getPosition().x,
+                            object.getPosition().y
+                        });
+
+                        io.scale(object.getAABB().width, object.getAABB().height);
+
+                        // coming soon
+
+                    }
+                    
+                }
+
+            } 
         }
 
         
@@ -98,32 +135,19 @@ bool World::initWorld(const std::string& filename) {
 }
 
 void World::render() const {
-    // Получаем размеры окна
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
 
-    // Рассчитываем размер одного тайла с учетом растяжения
-    float tileWidth = (float)screenWidth / _width;
-    float tileHeight = (float)screenHeight / _height;
-
-    for (const auto& layer : _layers) {
-        if (!layer._is_visible) continue;
-
+    for (const auto & layer : _layers) {
         for (int y = 0; y < _height; ++y) {
             for (int x = 0; x < _width; ++x) {
-                int tile_index = layer._grid[y * _width + x];
                 
-                // Пропускаем пустые тайлы
-                if (tile_index < 0 || tile_index >= static_cast<int>(_tiles.size())) continue;
+                int tile_index = layer._grid[y * _width + x];
 
                 const Tile& tile = _tiles[tile_index];
-                
-                // Прямоугольник назначения теперь растягивается на весь экран
                 Rectangle dest_rec = {
-                    x * tileWidth,       // X-позиция с учетом растяжения
-                    y * tileHeight,      // Y-позиция с учетом растяжения
-                    tileWidth,           // Ширина тайла с учетом растяжения
-                    tileHeight           // Высота тайла с учетом растяжения
+                    static_cast<float>(x * tile._source_rec.width),
+                    static_cast<float>(y * tile._source_rec.height),
+                    tile._source_rec.width,
+                    tile._source_rec.height
                 };
                 
                 DrawTexturePro(
@@ -138,7 +162,9 @@ void World::render() const {
             }
         }
     }
+
 }
+
 void World::update() {}
 void World::reset() {}
 
