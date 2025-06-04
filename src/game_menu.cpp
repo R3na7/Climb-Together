@@ -1,51 +1,33 @@
-#include "game_menu.hpp"
-#include "constants.hpp"
-#include <iostream>
-#define RGBA_BYTES_COUNT 4
+#include <Menu/game_menu.hpp>
+#include <constants.hpp>
+#include <game_menu.hpp>
 
 
-GameMenu::GameMenu() : _is_active(true) {}
 
-bool GameMenu::isActive() {
+GameMenu::GameMenu(const std::shared_ptr<Texture2D>& background_texture) 
+: _background(background_texture), _is_active(true) {
+
+}
+
+void GameMenu::addButton(const std::string &name, const Button &button) {
+    _buttons.insert({name,button});
+}
+
+void GameMenu::update() {
+ 
+    for(std::pair<std::string,Button>& p : _buttons) {
+        p.second.update();
+    }
+}
+
+void GameMenu::render() {
+    _background.render();
+    for(std::pair<std::string,Button>& p : _buttons) {
+        p.second.render();
+    }
+}
+
+
+bool GameMenu::isActive() const {
     return _is_active;
-}
-
-
-
-StartMenu::StartMenu(bool& isGameRunning) 
-:   _isGameRunning(isGameRunning), 
-    _start_button(),
-    _exit_button() {
-
-}
-
-void StartMenu::drawBackground() {
-
-}
-
-void StartMenu::update() {
-        
-    _start_button.update();
-    _exit_button.update();
-}
-
-void StartMenu::render() const {
-    
-
-}
-
-
-StartMenu::~StartMenu() {
-    
-
-}
-
-
-
-void PauseMenu::update() {
-
-}
-
-void PauseMenu::render() const {
-    
 }

@@ -1,11 +1,8 @@
 #include <UI/button.hpp>
 
-Button::Button() : UIElement(Vector2{0,0},Vector2{0,0},nullptr) {
-    _color_state = GRAY;
-}
 
-Button::Button(const Vector2& position,const Vector2& size ,const std::shared_ptr<Texture2D>& texture) 
-: UIElement(position,size,texture) {
+Button::Button(const Vector2& size,const Vector2& texture_coords,const std::shared_ptr<Texture2D>& texture) 
+: UIElement(size,texture_coords,texture) {
 
     _color_state = GRAY;
     this->_button_selection = [this]() -> bool {
@@ -16,8 +13,7 @@ Button::Button(const Vector2& position,const Vector2& size ,const std::shared_pt
     };
 }
 
-Button::Button(const Vector2& position, const std::shared_ptr<Texture2D>& texture)
-: Button(position, Vector2{texture->width,texture->height}, texture) {}
+Button::Button(const std::shared_ptr<Texture2D>& texture) : UIElement(texture) {}
 
 void Button::update() {
     
@@ -45,8 +41,7 @@ void Button::update() {
 }
 
 void Button::render() const {
-    DrawTexture(*_texture,_position.x,_position.y, _color_state);
-    //DrawTextureNPatch();
+    UIElement::render();
 }
 
 void Button::setSelection(const std::function<bool()>& selection, const std::function<void()>& action_hover) {
@@ -57,29 +52,6 @@ void Button::setSelection(const std::function<bool()>& selection, const std::fun
 void Button::setActionOnClick(key_t button, const std::function<void()>& action) {
     _action_on_click.key = button;
     _action_on_click.action = action;
-}
-
-
-
-void Button::setPosition(const Vector2& position) {
-    _position = position;
-}
-
-void Button::setPosition(float x, float y) {
-    _position.x = x;
-    _position.y = y;
-}
-
-Vector2 Button::getPosition() const {
-    return Vector2 {_position.x,_position.y};
-}
-
-float Button::getWidth() const {
-    return _size.x;
-}
-
-float Button::getHeight() const {
-    return _size.y;
 }
 
 const std::function<bool()>& Button::getButtonSelection() const {

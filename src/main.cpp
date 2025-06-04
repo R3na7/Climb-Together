@@ -7,7 +7,7 @@
 int main(void) {
 
     
-    InitWindow(1280, 720, "Teleportation 3000");
+    InitWindow(1280, 720, "Climb Together!");
     InitAudioDevice();
 
     

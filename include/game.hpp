@@ -20,19 +20,23 @@ public:
 private:
 
     void render();
-    void loadWorld(const std::string& _name);
     void update();
     void updateCamera();
-    void pause();
+
+    void restart();
 
     void playerHandleInput();
+
+    void initStartMenu()
 
     bool _isRunning = true;
 
     const size_t window_width;
     const size_t window_height;
 
-    std::unique_ptr<GameMenu> _menu;
+    std::map<MenuType,GameMenu> _menus;
+    GameMenu::Type _currentMenu; 
+
     
     World _world;
     
