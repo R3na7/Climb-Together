@@ -19,7 +19,7 @@ public:
 
     void setAnimation(const std::string& name,Texture2D texture, Vector2 scale, int frameWidth, int frameHeight, int framesCount, float frameDelay, bool looping=true);
 
-    void setAnimation(const std::string& name,const Animation& );
+    void setAnimation(const std::string& name,const Animation& animation);
 
     bool isCurrentAnimationFinished() const;
 

@@ -22,7 +22,6 @@ set(SOURCES
     src/collidable.cpp
 
     src/Entity/entity.cpp
-    src/Entity/npc.cpp
     src/Entity/player.cpp
 
     src/World/world.cpp

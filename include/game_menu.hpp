@@ -55,7 +55,7 @@ private:
 
     struct {
 
-        Texture2D texture 
+        Texture2D texture;
 
     } _background;
 
