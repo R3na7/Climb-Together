@@ -16,12 +16,15 @@ public:
 
 protected:
 
+    void draw(const Vector2& position, float width_extension, float height_extension);
 
-    void draw();
+    Color _color_state = WHITE;
 
     NPatchInfo _npatch;
 
     Vector2 _position;
+
+    float _rotation;
 
     Vector2 _size;
 

@@ -1,10 +1,13 @@
 #include <UI/button.hpp>
 
-Button::Button() : UIElement(Vector2{0,0},Vector2{0,0},nullptr) {}
+Button::Button() : UIElement(Vector2{0,0},Vector2{0,0},nullptr) {
+    _color_state = GRAY;
+}
 
 Button::Button(const Vector2& position,const Vector2& size ,const std::shared_ptr<Texture2D>& texture) 
 : UIElement(position,size,texture) {
 
+    _color_state = GRAY;
     this->_button_selection = [this]() -> bool {
         return CheckCollisionPointRec(
             GetMousePosition(),
@@ -42,7 +45,7 @@ void Button::update() {
 }
 
 void Button::render() const {
-    DrawTexture(*(_texture.get()),_position.x,_position.y, _color_state);
+    DrawTexture(*_texture,_position.x,_position.y, _color_state);
     //DrawTextureNPatch();
 }
 

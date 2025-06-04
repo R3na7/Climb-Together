@@ -37,9 +37,8 @@ private:
 
     bool _isSelected = false;
 
-    Color _color_state = GRAY;
-
     std::function<bool()> _button_selection;
+
     std::function<void()> _action_hover;
 
     struct {

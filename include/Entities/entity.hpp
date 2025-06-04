@@ -44,7 +44,7 @@ protected:
     float _velocity;
 
     bool _isColliadable;
-    int _id;
+    size_t _id;
 
     AnimationComponent _animation_component;
 };
