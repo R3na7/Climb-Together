@@ -7,17 +7,14 @@
 #include <sstream>
 
 #include "player.hpp"
-#include "tile.hpp"
-#include "grid.hpp"
-#include "npc.hpp"
+#include "interactivable.hpp"
 
 class World {
+    struct Layer;
+    struct Tile; 
 public:
     
     World();
-    World(const Grid & filename, Player * player = nullptr);
-    World(const std::string & filename, Player * player = nullptr);
-    World(World&& world);
     
     World(const World & world) = delete;
     World& operator=(const World &) = delete;
@@ -26,54 +23,55 @@ public:
 
     void render() const;
     void update();
-    virtual void start() = 0;
     void reset();
     
     void addEntity(const Entity & entity);
     void addInteractiveObject(const InteractiveObject & interactive_object);
-    void addNPC(const NPC & nps);
 
-    void removeEntity(const std::string & entity_name);
-    void removeInteractiveObject(const std::string & entity_name);
+    void removeEntity(int id);
+    void removeInteractiveObject(int id);
 
-    const Player * getPlayer() const;
-    Grid getGrid() const;
-    Texture2D getTileset() const;
-    const std::string& getName() const;
+    const Player *             getPlayer() const;
+    const Layer &              getLayer(const std::string & name) const;
+    const Texture2D &          getTileset() const;
+    const std::string &        getName() const;
+    const std::vector<Sound> & getBackgroundSounds() const;
     
     void setTileset(const Texture2D & tileset);
     void setPlayer(Player* player);
     void setFinished(bool _finished);
-    
-    bool isColidable(int x, int y) const;
+    void setBackgroundSound(const Sound & sound);
+
+    bool isColidable(float x, float y) const;
     bool isFinished() const;
     
     ~World() = default;
 
-protected:
+private:
     std::vector<std::unique_ptr<Entity>> _entities;
     std::vector<InteractiveObject> _interactiv_objects;
-    std::vector<NPC> _npcs;
     Player* _player;
 
-    Grid _grid;
+    std::vector<Layer> _layers;
+    std::vector<Tile> _tiles;
 
-    bool _is_finished;
+    Texture2D _tileset;
+    std::vector<Sound> _background_sounds;
+    
     std::string _world_name;
-};
+    bool _is_finished;
 
-class Lobby : public World {
-public:
-    
-    void start();
+    struct Layer {
+        std::vector<int> _grid;
+        std::string _name;
+        bool _is_visible;
+        bool _is_collision;
+    };
 
-};
-
-class Dogrld : public World {
-public:
-    
-    void start();
-
-private:
-    Texture2D _texture_ending;
+    struct Tile {
+        size_t _id;
+        Rectangle _source_rec;
+        std::vector<Vector2> polygon;
+        bool _is_collision;
+    };
 };

@@ -21,7 +21,6 @@ Game::Game()
 void Game::start() {
 
     _world->setPlayer(&_player);
-    _world->start();
 
     while(!WindowShouldClose() && _isRunning) {
         render();
