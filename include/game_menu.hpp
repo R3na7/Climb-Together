@@ -1,7 +1,7 @@
 #pragma once
 
 #include <raylib.h>
-#include <UI/ui_element.hpp>
+#include <UI/button.hpp>
 #include <Animation/animation.hpp>
 #define STORY_TEXTURE_NUMBER 4
 
@@ -34,8 +34,7 @@ public:
     void render() const override;
 
 private:
-
-    void playStoryAnim();
+    void drawBackground();
 
     bool& _isGameRunning;
 
@@ -53,9 +52,13 @@ private:
         float x_pos;
         float y_pos;
     } _arrow;
-    
-    Texture2D _background;
-    std::array<Texture2D,STORY_TEXTURE_NUMBER> _story_textures;
+
+    struct {
+
+        Texture2D texture 
+
+    } _background;
+
 };
 
 

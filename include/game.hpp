@@ -34,7 +34,7 @@ private:
 
     std::unique_ptr<GameMenu> _menu;
     
-    World _world;
+    std::unique_ptr<World> _world;
     
     Player _player;
 

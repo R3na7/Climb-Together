@@ -26,6 +26,7 @@ public:
     void interact();
 
 private:
+    bool isWASDKeysdown() const;
     int _hp;
     std::string _name;
 };

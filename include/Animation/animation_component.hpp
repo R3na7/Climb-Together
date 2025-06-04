@@ -9,6 +9,7 @@
 class AnimationComponent {
 public:
     AnimationComponent() = default;
+    
     ~AnimationComponent() = default;
 
     void addAnimation(const std::string& name);
@@ -17,6 +18,8 @@ public:
     void draw(Vector2 position, Color tint = WHITE) const;
 
     void setAnimation(const std::string& name,Texture2D texture, Vector2 scale, int frameWidth, int frameHeight, int framesCount, float frameDelay, bool looping=true);
+
+    void setAnimation(const std::string& name,const Animation& );
 
     bool isCurrentAnimationFinished() const;
 

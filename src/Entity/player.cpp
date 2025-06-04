@@ -1,66 +1,13 @@
 #include "player.hpp"
-static bool isWASDDownKeysdown();
 #include <iostream>
 
 Player::Player() 
-: Entity(), _name("Renat") {
+: Entity(), _name("Shamil") {
     _velocity = 2.5f;
 
     scale(0.15f, 0.15f);
 
-    _textures[RotationStates::Up] = LoadTexture(RES_PATH"player/StandingUp.png");
-    _textures[RotationStates::Right] = LoadTexture(RES_PATH"player/StandingRight.png");
-    _textures[RotationStates::Down] = LoadTexture(RES_PATH"player/StandingDown.png");
-    _textures[RotationStates::Left] = LoadTexture(RES_PATH"player/StandingLeft.png");
 
-    _animation_component.addAnimation("WalkingRight");
-    _animation_component.addAnimation("WalkingUp");
-    _animation_component.addAnimation("WalkingDown");
-    _animation_component.addAnimation("WalkingLeft");
-
-    Texture2D walking_right_animation = LoadTexture(RES_PATH"player/Animations/WalkingRight.png");
-    Texture2D walking_left_animation = LoadTexture(RES_PATH"player/Animations/WalkingLeft.png");
-    Texture2D walking_up_animation = LoadTexture(RES_PATH"player/Animations/WalkingUp.png");
-    Texture2D walking_down_animation = LoadTexture(RES_PATH"player/Animations/WalkingDown.png");
-
-    
-    _animation_component.setAnimation(
-        "WalkingRight",
-        walking_right_animation,
-        _scale,
-        walking_right_animation.width / 2,
-        walking_right_animation.height,
-        2,
-        1 / (2*_velocity)
-    );
-    _animation_component.setAnimation(
-        "WalkingLeft",
-        walking_left_animation,
-        _scale,
-        walking_left_animation.width / 2,
-        walking_left_animation.height,
-        2,
-        1 / (2*_velocity)
-    );
-    _animation_component.setAnimation(
-        "WalkingUp",
-        walking_up_animation,
-        _scale,
-        walking_up_animation.width / 2,
-        walking_up_animation.height,
-        2,
-        1 / (2*_velocity)
-    );
-    _animation_component.setAnimation(
-        "WalkingDown",
-        walking_down_animation,
-        _scale,
-        walking_down_animation.width / 2,
-        walking_down_animation.height,
-        2,
-        1 / (2*_velocity)
-    );
-    // e.t.c.
 
     initHitbox();
 
@@ -73,7 +20,7 @@ void Player::update() {
     updateAnimation();
 }
 
-static bool isWASDDownKeysdown() {
+bool Player::isWASDKeysdown() const {
     if (IsKeyDown(KEY_A))
         return true;
     else if (IsKeyDown(KEY_W))
@@ -95,7 +42,7 @@ void Player::render() const {
         (texture.height * _scale.y) / 2    // Центр по Y
     };
     
-    if(isWASDDownKeysdown()) {
+    if(isWASDKeysdown()) {
         switch (_rotation_state) {
             case RotationStates::Down:
                 _animation_component.draw(_position);
@@ -109,7 +56,7 @@ void Player::render() const {
                 _animation_component.draw(_position);
                 break;
             
-                case RotationStates::Left:
+            case RotationStates::Left:
                 _animation_component.draw(_position);
                 break;
             default:

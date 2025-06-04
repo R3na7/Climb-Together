@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
-project(Game)
+project(Climb_Together)
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+
+if(MINGW)
+    set(CMAKE_CXX_FLAGS "-static -mwindows")
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
@@ -18,6 +22,7 @@ set(SOURCES
     src/collidable.cpp
 
     src/Entity/entity.cpp
+    src/Entity/npc.cpp
     src/Entity/player.cpp
 
     src/World/world.cpp
@@ -28,6 +33,8 @@ set(SOURCES
     src/Animation/animation_component.cpp
 
     src/UI/ui_element.cpp
+    src/UI/button.cpp
+
     src/Interactive/interactivable.cpp
 )
 set(RESOURCES_DIR "resources")

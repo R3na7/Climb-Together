@@ -1,53 +1,30 @@
 #pragma once
 #include <raylib.h>
 #include <functional>
+#include <memory>
 
-class Button {
-private:
-    using key_t = int;
-
+class UIElement {
 public:
 
-    Button(const Vector2& position, const Texture2D& texture);
+    using key_t = int;
 
-    Button(
-        const std::function<void()>& action_on_click, const std::function<void()>& action_hover,
-        const Vector2& position, const Texture2D& texture);
+    UIElement(const Vector2& position, const Vector2& size, const std::shared_ptr<Texture2D>& texture); 
 
-    void update();
+    ~UIElement() = default;
 
-    void render() const;
+    virtual void render() const = 0;
 
-    void setSelection(const std::function<bool()>& selection, const std::function<void()>& action_hover);
-    void setActionOnClick(key_t button, const std::function<void()>& action_on_click);
-    
-    void setPosition(const Vector2& position);
-    void setPosition(float x, float y);
-
-    Vector2 getPosition() const;
-    float getWidth() const;
-    float getHeight() const;
-
-    bool isSelected() const;
-
-    const std::function<bool()>& getButtonSelection() const;
+protected:
 
 
-private:
+    void draw();
 
-    bool _isSelected = false;
+    NPatchInfo _npatch;
 
-    Color _color_state = GRAY;
+    Vector2 _position;
 
-    std::function<bool()> _button_selection;
-    std::function<void()> _action_hover;
+    Vector2 _size;
 
-    struct {
-        key_t button;
-        std::function<void()> action;
+    std::shared_ptr<Texture2D> _texture;
 
-    } _action_on_click;
-
-    Rectangle _box;
-    Texture2D _texture;
 };

@@ -1,3 +1,3 @@
-cmake --build ./build
-cd ./build/bin/
+cmake --build ./cmake-build-debug
+cd ./cmake-build-debug/bin/
 ./'Climb Together!'

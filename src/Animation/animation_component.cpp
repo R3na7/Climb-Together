@@ -1,5 +1,6 @@
 #include <Animation/animation_component.hpp>
 #include <iostream>
+#include "animation_component.hpp"
 
 void AnimationComponent::addAnimation(const std::string& name) {
     animations.insert({name,std::nullopt});
@@ -32,7 +33,11 @@ void AnimationComponent::setAnimation(const std::string& name,Texture2D texture,
     };
 }
 
-
+void AnimationComponent::setAnimation(const std::string &name, const Animation & animation) {
+    if(animations.count(name)) {
+        animations[name] = animation;
+    }
+}
 
 void AnimationComponent::draw(Vector2 position, Color tint) const {
     if (currentAnimation) 
