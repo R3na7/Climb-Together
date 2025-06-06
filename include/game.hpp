@@ -24,7 +24,8 @@ public:
 private:
 
 enum class EMENU : std::size_t {
-    START = 0,
+    NONE = 0,
+    START,
     PAUSE,
     SETTINGS 
 };
@@ -36,13 +37,16 @@ private:
 
     void updateMenu();
 
+    void initStartMenu(const std::string& background_filepath);
+
+    void initPauseMenu(const std::string& background_filepath);
+
+    void initSettingsMenu(const std::string& background_filepath);
+
     void restart();
 
     void playerHandleInput();
 
-    void initStartMenu(const std::string& background_filepath);
-    void initPauseMenu(const std::string& background_filepath);
-    void initSettingsMenu(const std::string& background_filepath);
 
     bool _isRunning = true;
 

@@ -26,7 +26,7 @@ void Button::update() {
             _action_hover();
 
         if(_action_on_click.action) {
-            if(IsKeyPressed(_action_on_click.key))
+            if(IsMouseButtonPressed(_action_on_click.key) || IsKeyPressed(_action_on_click.key))
                 _action_on_click.action();
 
         }

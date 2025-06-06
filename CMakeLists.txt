@@ -11,6 +11,7 @@ endif()
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
+    set(CMAKE_CXX_FLAGS "-fsanitize=address,leak,undefined -Wall")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -19,6 +20,7 @@ set(SOURCES
     src/main.cpp
     src/game.cpp    
     src/game_menu.cpp
+    src/init_menu.cpp
     src/collidable.cpp
     src/object.cpp
 
