@@ -1,16 +1,17 @@
 #include <UI/button.hpp>
+#include <iostream>
 
+Button::Button(const Vector2& source_size,const Vector2& texture_coords,const std::shared_ptr<Texture2D>& texture) 
+: UIElement(source_size,texture_coords,texture) {
 
-Button::Button(const Vector2& size,const Vector2& texture_coords,const std::shared_ptr<Texture2D>& texture) 
-: UIElement(size,texture_coords,texture) {
-
-    _color_state = GRAY;
+    color_state = GRAY;
     this->_button_selection = [this]() -> bool {
         return CheckCollisionPointRec(
             GetMousePosition(),
             Rectangle{_position.x,_position.y,_size.x,_size.y}
         );
     };
+    
 }
 
 Button::Button(const std::shared_ptr<Texture2D>& texture) : UIElement(texture) {}
@@ -19,12 +20,10 @@ void Button::update() {
     
     bool wasSelected = _isSelected;
 
-    _isSelected = _button_selection();
+    if(_button_selection)
+        _isSelected = _button_selection();
 
-    _color_state = GRAY;
-    
     if(_isSelected) {
-        _color_state = WHITE;
 
         if(!wasSelected) {
             if(_action_hover)
@@ -40,9 +39,6 @@ void Button::update() {
     }
 }
 
-void Button::render() const {
-    UIElement::render();
-}
 
 void Button::setSelection(const std::function<bool()>& selection, const std::function<void()>& action_hover) {
     this->_button_selection = selection;

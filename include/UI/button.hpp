@@ -8,18 +8,15 @@ public:
 
     explicit Button(const std::shared_ptr<Texture2D>& texture);
 
-    Button(const Vector2& size, const Vector2& texture_coords, const std::shared_ptr<Texture2D>& texture);
+    Button(const Vector2& source_size, const Vector2& texture_coords, const std::shared_ptr<Texture2D>& texture);
 
     ~Button() = default;
 
     void update();
 
-    void render() const;
-
     void setSelection(const std::function<bool()>& selection, const std::function<void()>& action_hover);
-    void setActionOnClick(key_t button, const std::function<void()>& action_on_click);
-    
 
+    void setActionOnClick(key_t button, const std::function<void()>& action_on_click);
 
     bool isSelected() const;
 

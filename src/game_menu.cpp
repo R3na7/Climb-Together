@@ -1,32 +1,47 @@
-#include <Menu/game_menu.hpp>
-#include <constants.hpp>
 #include <game_menu.hpp>
-
+#include <constants.hpp>
+#include <UI/button.hpp>
 
 
 GameMenu::GameMenu(const std::shared_ptr<Texture2D>& background_texture) 
-: _background(background_texture), _is_active(true) {
+: _background(
+        Vector2{background_texture->width, background_texture->height},
+        Vector2{0,0},
+        background_texture
+    ),
+  _is_active(false) {
 
 }
 
-void GameMenu::addButton(const std::string &name, const Button &button) {
-    _buttons.insert({name,button});
+void GameMenu::addButton(const std::string& name, const Button &button) {
+    _buttons.insert({name, button});
+}
+
+void GameMenu::setButtonSize(const std::string &name, const Vector2 &size) {
+    _buttons.at(name).setSize(size);
+}
+
+void GameMenu::setButtonPosition(const std::string &name, const Vector2 &position) {
+    _buttons.at(name).setPosition(position);
 }
 
 void GameMenu::update() {
- 
-    for(std::pair<std::string,Button>& p : _buttons) {
-        p.second.update();
+    _background.setSize(Vector2{GetScreenWidth(),GetScreenHeight()});
+    for(auto& [name,button] : _buttons) {
+        button.update();
     }
 }
 
-void GameMenu::render() {
+void GameMenu::render() const {
     _background.render();
-    for(std::pair<std::string,Button>& p : _buttons) {
-        p.second.render();
+    for(auto& [name, button] : _buttons) {
+        button.render();
     }
 }
 
+void GameMenu::setActive(bool is_active) {
+    _is_active = is_active;
+}
 
 bool GameMenu::isActive() const {
     return _is_active;

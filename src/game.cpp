@@ -3,17 +3,38 @@
 #include "player.hpp"
 #include <raymath.h>
 
-Game::Game() : window_width(GetScreenWidth()), window_height(GetScreenHeight()) {
+Game::Game() : 
+    window_width(GetScreenWidth()),
+    window_height(GetScreenHeight()),
+    _currentMenu(EMENU::START) {
     SetTargetFPS(120);
     
 
-    initGameMenus();
-    Button play {
+    initMenu(EMENU::START,RES_PATH"example.jpg");
+    Button play_button (
         Vector2{586,359},
         Vector2{74,129},
-        std::make_shared<Texture2D>(LoadTexture(RES_PATH"resources/buttons.png"))
-    };
-    _menus[MenuType::START_MENU].addButton("PlayButton",play);
+        std::make_shared<Texture2D>(LoadTexture(RES_PATH"buttons.png"))
+    );
+    play_button.setSelection(
+        [&play_button]() -> bool {
+            auto pos = play_button.getPosition();
+            auto size = play_button.getSize();
+
+            return CheckCollisionPointRec(
+                GetMousePosition(),
+                Rectangle{pos.x,pos.y,size.x,size.y}
+            );
+        },
+        [&play_button](){
+            std::cout << "\n\n ---------------------------- \n\n";
+            play_button.color_state = WHITE;
+        }
+
+    );
+    GameMenu& start_menu = _menus.at(EMENU::START);
+    start_menu.addButton("PlayButton",play_button);
+    start_menu.setActive(true);
 
     _camera = {0};
     _camera.offset = {static_cast<float>(window_width) / 2, static_cast<float>(window_height) / 2}; 
@@ -28,8 +49,8 @@ void Game::start() {
     _world.initWorld(RES_PATH"testWorld.tmx");
 
     while(!WindowShouldClose() && _isRunning) {
-        render();
         update();
+        render();
     }
 
     CloseWindow();
@@ -37,8 +58,27 @@ void Game::start() {
 
 
 void Game::update() {
+    window_width = GetScreenHeight();
+    window_height = GetScreenHeight();
 
-    _world.update();
+    if(_menus.at(_currentMenu).isActive())
+        updateMenu();
+
+
+}
+
+void Game::render() {
+    BeginDrawing();
+    ClearBackground(BLACK); 
+    if(_menus.at(_currentMenu).isActive()) {
+        _menus.at(_currentMenu).render();
+    }
+    else {
+        _world.render(); 
+    }
+
+    EndDrawing();
+    
 }
 
 void Game::playerHandleInput() {
@@ -68,56 +108,31 @@ void Game::playerHandleInput() {
     }
 }
 
-void Game::render() {
-    BeginDrawing();
-    ClearBackground(BLACK);
 
-        _world.render(); 
-        
-    EndDrawing();
-    
+void Game::initMenu(const EMENU menu_name, const std::string& background_filepath) {
+    const auto& background_texture = std::make_shared<Texture2D>(LoadTexture(background_filepath.c_str()));
+    _menus.insert({menu_name, GameMenu { background_texture } });
 }
 
-void Game::updateCamera() {
 
-    // Получаем размеры карты (предполагая, что у World есть методы getMapWidth() и getMapHeight())
-    float mapWidth = _world->getGrid().getWidth() * 256.0f;  // в пикселях
-    float mapHeight = _world->getGrid().getHeight() * 256.0f; // в пикселях
-    
-    // Рассчитываем половину видимой области камеры
-    float cameraHalfWidth = (window_width / 2.0f) / _camera.zoom;
-    float cameraHalfHeight = (window_height / 2.0f) / _camera.zoom;
-    
-    // Ограничиваем камеру в пределах карты
-    _camera.target.x = Clamp(_camera.target.x, cameraHalfWidth, mapWidth - cameraHalfWidth);
-    _camera.target.y = Clamp(_camera.target.y, cameraHalfHeight, mapHeight - cameraHalfHeight);
-
-    if (IsKeyDown(KEY_UP)) {
-            _camera.zoom += 0.01f;
+void Game::updateMenu() {
+    switch (_currentMenu) {
+    case EMENU::START: {
+        GameMenu& start_menu = _menus.at(_currentMenu);
+        start_menu.update();
+        start_menu.setButtonSize("PlayButton",Vector2{ window_width / 2, window_height / 4});
+        start_menu.setButtonPosition("PlayButton",Vector2{window_width/3,window_height/4});
+        break;
     }
-    if (IsKeyDown(KEY_DOWN)) {
-        if (_camera.zoom > 0.3f) {
-            _camera.zoom -= 0.01f;
-        }
-    }
+
+    case EMENU::PAUSE:
+        break;
+
+    case EMENU::SETTINGS:
+        break;
     
-    // Также ограничиваем зум, чтобы не было слишком маленького или большого масштаба
-    _camera.zoom = Clamp(_camera.zoom, 0.1f, 3.0f);
-}
-void Game::initGameMenus() {
+    default:
+        break;
+    }
 
-    _menus.emplace(
-        MenuType::START_MENU,
-        GameMenu{std::make_shared<Texture2D>(LoadTexture(RES_PATH"resources/example.jpg"))} 
-    );
-
-    _menus.emplace(
-        MenuType::PAUSE_MENU,
-        GameMenu{std::make_shared<Texture2D>(LoadTexture(RES_PATH"resources/example.jpg"))} 
-    );
-
-    _menus.emplace(
-        MenuType::SETTINGS_MENU,
-        GameMenu{std::make_shared<Texture2D>(LoadTexture(RES_PATH"resources/example.jpg"))} 
-    );
 }

@@ -3,12 +3,9 @@
 #include <raylib.h>
 #include <UI/button.hpp>
 #include <map>
+#include <string>
 
-enum class MenuType {
-    START_MENU = 0,
-    SETTINGS_MENU,
-    PAUSE_MENU
-};
+#include <iostream>
 
 class GameMenu {
 public:
@@ -18,9 +15,16 @@ public:
     ~GameMenu() = default;
 
     void update();
-    void render() const;
 
+    void render() const;
+    
     void addButton(const std::string& name, const Button& button);
+
+    void setButtonSize(const std::string& name, const Vector2& size);
+
+    void setButtonPosition(const std::string &name, const Vector2 &position);
+
+    void setActive(bool is_active);
 
     bool isActive() const;
 

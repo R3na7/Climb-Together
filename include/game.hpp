@@ -1,12 +1,13 @@
-#pragma once
+#ifndef GAME_HPP
+#define GAME_HPP
+
 #include <raylib.h>
 #include <memory>
 
 #include "player.hpp"
 #include "game_menu.hpp"
 #include "world.hpp"
-
-class GameMenu;
+#include <string>
 
 class Game {
 public:
@@ -17,26 +18,37 @@ public:
     void start();
     bool& isRunning();
 
+    class ResourceManager;
+
+private:
+
+enum class EMENU : std::size_t {
+    START = 0,
+    PAUSE,
+    SETTINGS 
+};
+
 private:
 
     void render();
     void update();
-    void updateCamera();
+
+    void updateMenu();
 
     void restart();
 
     void playerHandleInput();
 
-    void initStartMenu()
+    void initMenu(EMENU menu_name,const std::string& background_filepath);
 
     bool _isRunning = true;
 
-    const size_t window_width;
-    const size_t window_height;
+    size_t window_width;
+    size_t window_height;
 
-    std::map<MenuType,GameMenu> _menus;
-    GameMenu::Type _currentMenu; 
+    std::map<EMENU,GameMenu> _menus;
 
+    EMENU _currentMenu; 
     
     World _world;
     
@@ -44,3 +56,5 @@ private:
 
     Camera2D _camera;
 };
+
+#endif // GAME_HPP
