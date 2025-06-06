@@ -27,6 +27,7 @@ bool World::initWorld(const std::string& filename) {
         const auto & tilesets = map.getTilesets();
         if (tilesets.empty()) return false;
         _tileset = LoadTexture(tilesets[0].getImagePath().c_str());
+        _tile_size = tilesets[0].getTileSize().x;
 
         _tiles.resize(tilesets[0].getTileCount());
         for (auto & tile : tilesets[0].getTiles()) {
@@ -74,6 +75,7 @@ bool World::initWorld(const std::string& filename) {
                     world_layer._grid.push_back(tile_layer.getTiles()[i].ID - 1);
                 }
 
+                std::cout << world_layer._name << "----------------------" << std::endl;
                 for (int y = 0; y < _height; ++y) {
                     for (int x = 0; x < _width; ++x) {
                         std::cout << world_layer._grid[y * _width + x] << " ";
@@ -81,42 +83,64 @@ bool World::initWorld(const std::string& filename) {
                     std::cout << std::endl;
                 }
 
-                _layers.push_back(std::move(world_layer));
+                _layers.push_back(world_layer);
+
+                std::cout << _layers.back()._name << "----------------------" << std::endl;
+                for (int y = 0; y < _height; ++y) {
+                    for (int x = 0; x < _width; ++x) {
+                        std::cout << _layers.back()._grid[y * _width + x] << " ";
+                    }
+                    std::cout << std::endl;
+                }
 
             } else if (layer->getType() == tmx::Layer::Type::Object) {
                 const auto & objectGroup = layer->getLayerAs<tmx::ObjectGroup>();
 
                 for (const auto & object : objectGroup.getObjects()) {
 
-                    if (object.getType() == "player" && _player) {
+                    if (object.getName() == "player") {
 
                         _player->setPosition({
-                            object.getPosition().x,
-                            object.getPosition().y
+                            object.getPosition().x + object.getAABB().width / 2.0f,
+                            object.getPosition().y + object.getAABB().height / 2.0f
                         });
 
-                    }
-
-                    if (object.getType() == "entity") {
-
-                        // ????????
-
-                    }
-
-                    if (object.getType() == "interactive_object") {
-
-                        InteractiveObject io;
-
-                        io.setPosition({
-                            object.getPosition().x,
-                            object.getPosition().y
+                        _player->setHitbox({
+                            object.getAABB().left,
+                            object.getAABB().top,
+                            object.getAABB().width,
+                            object.getAABB().height
                         });
 
-                        io.scale(object.getAABB().width, object.getAABB().height);
+                        _player->setVisible(object.visible());
 
-                        // coming soon
+                        for (const auto & proportie : object.getProperties()) {
+                            if (proportie.getName() == "name") _player->setName(proportie.getStringValue());
+                            if (proportie.getName() == "hp") _player->setHp(proportie.getIntValue());
+                        }
 
                     }
+
+                    // if (object.getType() == "entity") {
+
+                    //     // ????????
+
+                    // }
+
+                    // if (object.getType() == "interactive_object") {
+
+                    //     InteractiveObject io;
+
+                    //     io.setPosition({
+                    //         object.getPosition().x,
+                    //         object.getPosition().y
+                    //     });
+
+                    //     io.scale(object.getAABB().width, object.getAABB().height);
+
+                    //     // coming soon
+
+                    // }
                     
                 }
 
@@ -163,27 +187,126 @@ void World::render() const {
         }
     }
 
+    if (_player) {
+        _player->render();
+    }
+
 }
 
-void World::update() {}
+void World::update() {
+
+    _player->update();
+
+}
 void World::reset() {}
 
 void World::addEntity(const Entity & entity) {}
-void World::addInteractiveObject(const InteractiveObject & interactive_object) {}
+void World::addInteractiveObject(const InteractiveObject & interactive_object) {
+    _interactiv_objects.push_back(interactive_object);
+}
+void World::addBackgroundSound(const Sound & sound) {
+    _background_sounds.push_back(sound);
+}
 
 void World::removeEntity(int id) {}
 void World::removeInteractiveObject(int id) {}
 
-const Player *             World::getPlayer() const {}
-const World::Layer &              World::getLayer(const std::string & name) const {}
-const Texture2D &          World::getTileset() const {}
-const std::string &        World::getName() const {}
-const std::vector<Sound> & World::getBackgroundSounds() const {}
+void World::setPlayer(Player* player) {
+    _player = player;
+}
 
-void World::setTileset(const Texture2D & tileset) {}
-void World::setPlayer(Player* player) {}
-void World::setFinished(bool _finished) {}
-void World::setBackgroundSound(const Sound & sound) {}
+void World::setTileset(const Texture2D & tileset) {
+    _tileset = tileset;
+}
 
-bool World::isColidable(float x, float y) const {}
-bool World::isFinished() const {}
+void World::setFinished(bool _finished) {
+    _is_finished = _finished;
+}
+
+
+const World::Layer & World::getLayer(const std::string & name) const {
+
+    // std::find(_layers.begin(), _layers.end(), [name](const World::Layer & layer){
+    //     return layer._name == name;
+    // });
+
+}
+const Player *             World::getPlayer()           const { return _player;  }
+int                        World::getWidth()            const { return _width;   }
+int                        World::getHeight()           const { return _height;  }
+const Texture2D &          World::getTileset()          const { return _tileset; }
+const std::string &        World::getName()             const { return _name;    }
+const std::vector<Sound> & World::getBackgroundSounds() const { return _background_sounds; }
+
+bool World::checkCollidable(float x, float y) const {
+
+    int normal_x = x / _tile_size;
+    int normal_y = y / _tile_size;
+
+    for (auto & layer : _layers) {
+        if (layer._is_collision) {            
+            return layer._grid[normal_y * _width + normal_x] != -1;
+        }
+    }
+    return false;
+}
+
+bool World::checkCollidable(const Vector2 & point) const {
+
+    int normal_x = point.x / _tile_size;
+    int normal_y = point.y / _tile_size;
+
+    for (auto & layer : _layers) {
+        if (layer._is_collision) {
+            return layer._grid[normal_y * _width + normal_x] != -1;
+        }
+    }
+    return false;
+}
+
+bool World::checkCollidable(float x, float y, float width, float height) const {
+    
+    Vector2 left_top_point   {x, y};
+    Vector2 right_top_point {x + width, y};
+    Vector2 right_down_point {x + width, y + height};
+    Vector2 left_down_point  {x, y + height};
+
+    for (auto & layer : _layers) {
+        if (layer._is_collision) {
+
+        }
+    }
+
+    return false;
+
+}
+
+bool World::checkCollidable(const Rectangle & rec) const {
+
+    Rectangle tile_hitbox = {
+        0.0f, 0.0f,
+        _tile_size, _tile_size
+    };
+
+    for (auto & layer : _layers) {
+        if (layer._is_collision) {
+            for (int y = 0; y < _height; ++y) {
+                for (int x = 0; x < _width; ++x) {
+                    tile_hitbox.x = x * _tile_size;
+                    tile_hitbox.y = y * _tile_size;
+
+                    if (layer._grid[y * _width + x] != -1) {
+                        if (CheckCollisionRecs(rec, tile_hitbox)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
+bool World::isFinished() const { return _is_finished; }

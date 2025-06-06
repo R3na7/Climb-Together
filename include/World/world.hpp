@@ -27,22 +27,28 @@ public:
     
     void addEntity(const Entity & entity);
     void addInteractiveObject(const InteractiveObject & interactive_object);
+    void addBackgroundSound(const Sound & sound);
 
     void removeEntity(int id);
     void removeInteractiveObject(int id);
 
+    void setPlayer(Player* player);
+    void setTileset(const Texture2D & tileset);
+    void setFinished(bool _finished);
+
     const Player *             getPlayer() const;
     const Layer &              getLayer(const std::string & name) const;
+    int                        getWidth() const;
+    int                        getHeight() const;
     const Texture2D &          getTileset() const;
     const std::string &        getName() const;
     const std::vector<Sound> & getBackgroundSounds() const;
-    
-    void setTileset(const Texture2D & tileset);
-    void setPlayer(Player* player);
-    void setFinished(bool _finished);
-    void setBackgroundSound(const Sound & sound);
 
-    bool isColidable(float x, float y) const;
+    bool checkCollidable(float x, float y) const;
+    bool checkCollidable(const Vector2 & point) const;
+    bool checkCollidable(float x, float y, float width, float height) const;
+    bool checkCollidable(const Rectangle & point) const;
+
     bool isFinished() const;
     
     ~World() = default;
@@ -60,6 +66,7 @@ private:
     int _height;
 
     Texture2D _tileset;
+    int _tile_size;
     std::vector<Sound> _background_sounds;
     
     std::string _name;
@@ -73,7 +80,7 @@ private:
     };
 
     struct Tile {
-        size_t _id;
+        int _id;
         Rectangle _source_rec;
         std::vector<Vector2> polygon;
         bool _is_collision;

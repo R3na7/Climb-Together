@@ -4,26 +4,28 @@
 #include <raymath.h>
 
 Game::Game()
-:   window_width(GetScreenWidth()) 
-    , window_height(GetScreenHeight())
-    , _menu(std::make_unique<StartMenu>(_isRunning)) {
+:   window_width(GetScreenWidth()), window_height(GetScreenHeight()), 
+    _menu(std::make_unique<StartMenu>(_isRunning)),
+    _player({LoadTexture(RES_PATH"player.png")})
+{
     SetTargetFPS(120);
+
+    _world.setPlayer(&_player);
 
     _camera = {0};
     _camera.offset = {static_cast<float>(window_width) / 2, static_cast<float>(window_height) / 2}; 
-    _camera.target = {0, 0};
+    _camera.target = _player.getPosition();
     _camera.rotation = 0.0f;  
     _camera.zoom = 1.0f;      
 }
 
 void Game::start() {
-
-    _world.setPlayer(&_player);
+    
     _world.initWorld(RES_PATH"testWorld.tmx");
 
     while(!WindowShouldClose() && _isRunning) {
-        render();
         update();
+        render();
     }
 
     CloseWindow();
@@ -36,39 +38,46 @@ void Game::update() {
     // }
     // else {
 
-        _world.update();
+    _world.update();
         
-        playerHandleInput();
-        updateCamera();
+    playerHandleInput();
+    updateCamera();
 
     //}
 }
 
 void Game::playerHandleInput() {
-    float velocity = _player.getVelocity();
+    Vector2 velocity = _player.getVelocity();
 
-    if (IsKeyDown(KEY_LEFT_SHIFT)) velocity *= 2.0f;
-
+    Vector2 start_position = _player.getPosition();
+    
     if (IsKeyDown(KEY_A)) 
     {
-        _player.move(-velocity, 0.0f);
-
+        _player.move(-velocity.x, 0.0f);
     }
     if (IsKeyDown(KEY_D)) 
     {
-        _player.move(velocity, 0.0f);
-
+        _player.move(velocity.x, 0.0f);
     }
     if (IsKeyDown(KEY_W)) 
     {
-        _player.move(0.0f, -velocity);
-
+        _player.move(0.0f, -velocity.y);
     }
     if (IsKeyDown(KEY_S)) 
     {
-        _player.move(0.0f, velocity);
-
+        _player.move(0.0f, velocity.y);
     }
+    if (IsKeyDown(KEY_UP)) {
+        _camera.zoom += 0.05f;
+    }
+    if (IsKeyDown(KEY_DOWN)) {
+        _camera.zoom -= 0.05f;
+    }
+
+    if (_world.checkCollidable(_player.getHitbox())) {
+        _player.setPosition(start_position);
+    }
+
 }
 
 void Game::render() {
@@ -91,5 +100,5 @@ void Game::render() {
 }
 
 void Game::updateCamera() {
-
+    _camera.target = _player.getPosition();
 }

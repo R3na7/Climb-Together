@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="10" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="10" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="4">
  <tileset firstgid="1" name="dangeon" tilewidth="16" tileheight="16" tilecount="768" columns="32">
   <image source="dangeon.png" width="512" height="384"/>
  </tileset>
@@ -94,4 +94,12 @@
 310,314,318,306,306,318,314,310,306,306
 </data>
  </layer>
+ <objectgroup id="4" name="Entitye">
+  <object id="2" name="player" x="33.2596" y="529.119" width="13.7574" height="13.9232">
+   <properties>
+    <property name="hp" type="int" value="3"/>
+    <property name="name" value="Renat"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

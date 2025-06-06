@@ -20,6 +20,7 @@ set(SOURCES
     src/game.cpp    
     src/game_menu.cpp
     src/collidable.cpp
+    src/object.cpp
 
     src/Entity/entity.cpp
     src/Entity/player.cpp

@@ -3,21 +3,17 @@
 
 Player::Player() 
 : Entity(), _name("Shamil") {
-    _velocity = 2.5f;
 
     scale(0.15f, 0.15f);
 
-
-
-    initHitbox();
-
 }
 
-Player::Player(const std::array<Texture2D,DIRECTIONS_COUNT> _textures, const std::string & name,const Vector2 & position, int hp) 
-: Entity(_textures, position), _name(name), _hp(hp) {}
+Player::Player(const std::array<Texture2D,DIRECTIONS_COUNT> _textures, const std::string & name) 
+: Entity(_textures), _name(name) {}
 
 void Player::update() {
     updateAnimation();
+    updateHitboxes(_position.x, _position.y);
 }
 
 bool Player::isWASDKeysdown() const {
@@ -33,63 +29,63 @@ bool Player::isWASDKeysdown() const {
     return false;
 }
 
-void Player::render() const {
+// void Player::render() const {
     
-    const Texture2D& texture = _textures[_rotation_state];
+//     const Texture2D& texture = _textures[_rotation_state];
 
-    Vector2 origin = {
-        (texture.width * _scale.x) / 2,    // Центр по X
-        (texture.height * _scale.y) / 2    // Центр по Y
-    };
+//     Vector2 origin = {
+//         (texture.width * _scale.x) / 2,    // Центр по X
+//         (texture.height * _scale.y) / 2    // Центр по Y
+//     };
     
-    if(isWASDKeysdown()) {
-        switch (_rotation_state) {
-            case RotationStates::Down:
-                _animation_component.draw(_position);
-                break;
+//     if(isWASDKeysdown()) {
+//         switch (_rotation_state) {
+//             case RotationStates::Down:
+//                 _animation_component.draw(_position);
+//                 break;
             
-            case RotationStates::Up:
-                _animation_component.draw(_position);    
-                break;
+//             case RotationStates::Up:
+//                 _animation_component.draw(_position);    
+//                 break;
 
-            case RotationStates::Right:
-                _animation_component.draw(_position);
-                break;
+//             case RotationStates::Right:
+//                 _animation_component.draw(_position);
+//                 break;
             
-            case RotationStates::Left:
-                _animation_component.draw(_position);
-                break;
-            default:
-                break;
-        }
-    }
-    else {
+//             case RotationStates::Left:
+//                 _animation_component.draw(_position);
+//                 break;
+//             default:
+//                 break;
+//         }
+//     }
+//     else {
         
-        Rectangle source_rect = {
-            0.0f, 0.0f,                       // Начало текстуры (x, y)
-            (float)texture.width,              // Ширина исходной текстуры
-            (float)texture.height              // Высота исходной текстуры
-        };
+//         Rectangle source_rect = {
+//             0.0f, 0.0f,                       // Начало текстуры (x, y)
+//             (float)texture.width,              // Ширина исходной текстуры
+//             (float)texture.height              // Высота исходной текстуры
+//         };
         
-        Rectangle dest_rect = {
-            _position.x,                       // Центр по X
-            _position.y,                       // Центр по Y
-            texture.width * _scale.x,          // Ширина с масштабом
-            texture.height * _scale.y          // Высота с масштабом
-        };
+//         Rectangle dest_rect = {
+//             _position.x,                       // Центр по X
+//             _position.y,                       // Центр по Y
+//             texture.width * _scale.x,          // Ширина с масштабом
+//             texture.height * _scale.y          // Высота с масштабом
+//         };
         
-        DrawTexturePro(
-            texture,
-            source_rect,
-            dest_rect,
-            origin,
-            0.0f,                              // Угол поворота (если нужно)
-            WHITE                              // Цвет (можно добавить поле)
-        );
-    }
+//         DrawTexturePro(
+//             texture,
+//             source_rect,
+//             dest_rect,
+//             origin,
+//             0.0f,                              // Угол поворота (если нужно)
+//             WHITE                              // Цвет (можно добавить поле)
+//         );
+//     }
 
 
-}
+// }
 
 void Player::setName(const std::string & name) {
     _name = name;
@@ -104,7 +100,4 @@ int Player::getHp()                   const { return _hp; }
 
 void Player::interact() {
 
-}
-float Player::getVelocity() {
-    return _velocity;
 }
