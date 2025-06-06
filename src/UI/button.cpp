@@ -4,7 +4,6 @@
 Button::Button(const Vector2& source_size,const Vector2& texture_coords,const std::shared_ptr<Texture2D>& texture) 
 : UIElement(source_size,texture_coords,texture) {
 
-    color_state = GRAY;
     this->_button_selection = [this]() -> bool {
         return CheckCollisionPointRec(
             GetMousePosition(),
@@ -17,18 +16,14 @@ Button::Button(const Vector2& source_size,const Vector2& texture_coords,const st
 Button::Button(const std::shared_ptr<Texture2D>& texture) : UIElement(texture) {}
 
 void Button::update() {
-    
-    bool wasSelected = _isSelected;
 
     if(_button_selection)
         _isSelected = _button_selection();
 
     if(_isSelected) {
 
-        if(!wasSelected) {
-            if(_action_hover)
-                _action_hover();
-        }
+        if(_action_hover)
+            _action_hover();
 
         if(_action_on_click.action) {
             if(IsKeyPressed(_action_on_click.key))

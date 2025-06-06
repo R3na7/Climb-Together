@@ -39,12 +39,14 @@ private:
 
     void playerHandleInput();
 
-    void initMenu(EMENU menu_name,const std::string& background_filepath);
+    void initStartMenu(const std::string& background_filepath);
+    void initPauseMenu(const std::string& background_filepath);
+    void initSettingsMenu(const std::string& background_filepath);
 
     bool _isRunning = true;
 
-    size_t window_width;
-    size_t window_height;
+    float window_width;
+    float window_height;
 
     std::map<EMENU,GameMenu> _menus;
 

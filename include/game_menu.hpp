@@ -24,6 +24,10 @@ public:
 
     void setButtonPosition(const std::string &name, const Vector2 &position);
 
+    Button& getButton(const std::string& name);
+
+    const Button& getButton(const std::string& name) const;
+
     void setActive(bool is_active);
 
     bool isActive() const;

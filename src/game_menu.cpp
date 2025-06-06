@@ -25,6 +25,7 @@ void GameMenu::setButtonPosition(const std::string &name, const Vector2 &positio
     _buttons.at(name).setPosition(position);
 }
 
+
 void GameMenu::update() {
     _background.setSize(Vector2{GetScreenWidth(),GetScreenHeight()});
     for(auto& [name,button] : _buttons) {
@@ -37,6 +38,14 @@ void GameMenu::render() const {
     for(auto& [name, button] : _buttons) {
         button.render();
     }
+}
+
+Button& GameMenu::getButton(const std::string& name) {
+    return _buttons.at(name);
+}
+
+const Button& GameMenu::getButton(const std::string& name) const {
+    return _buttons.at(name);
 }
 
 void GameMenu::setActive(bool is_active) {
