@@ -98,12 +98,12 @@ void Game::playerHandleInput() {
     }
     if (IsKeyDown(KEY_W)) 
     {
-        _player.move(0, -velocity);
+        _player.move(0.0f, -velocity);
 
     }
     if (IsKeyDown(KEY_S)) 
     {
-        _player.move(0, velocity);
+        _player.move(0.0f, velocity);
 
     }
 }
