@@ -10,15 +10,24 @@ Game::Game() :
     _player({LoadTexture(RES_PATH"player.png")}) {
     SetTargetFPS(120);
     
-
+    
     initStartMenu(RES_PATH"example.jpg");
-
+    
     b2Vec2 gravity(0.0f, 9.8f);
     _physics_world = std::make_unique<b2World>(gravity);
-
+    
     _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
+
     _world.setPlayer(&_player);    
     _world.initPhysics(_physics_world.get());
+    _world.initWorld(RES_PATH"testWorld.tmx");
+
+    _camera = { 0 };
+    _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
+    _camera.rotation = 0.0f;
+    _camera.zoom = 1.0f;
+
+    
 }
 
 void Game::start() {
@@ -38,20 +47,43 @@ void Game::update() {
 
     _window_width = GetScreenWidth();
     _window_height = GetScreenHeight();
-
-    if(_currentMenu != EMENU::NONE)
+    
+    if(0) {
         updateMenu();
+    }
+    else {
+        _physics_world->Step(1.0f / 60.0f, 8, 3);
+        _world.update();
+
+        _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
+        
+        if (IsKeyDown(KEY_UP)) {
+            _camera.zoom *= 1.1f;
+        }
+        if (IsKeyDown(KEY_DOWN)) {
+            _camera.zoom *= 0.9f;
+        }
+        if (IsKeyDown(KEY_A)) {
+            _player.applyImpulse({0.0f, 1.0f});
+        }
+        if (IsKeyDown(KEY_D)) {
+            _player.applyImpulse({1.0f, 0.0f});
+        }
+    }
 
 }
 
 void Game::render() {
     BeginDrawing();
     ClearBackground(BLACK); 
-    if(_currentMenu != EMENU::NONE) {
+    if(0) {
         _menus.at(_currentMenu).render();
     }
     else {
+        BeginMode2D(_camera);  // Начинаем режим 2D с камерой
+
         _world.render(); 
+        EndMode2D();          // Заканчиваем режим 2D
     }
 
     EndDrawing();
@@ -80,14 +112,10 @@ void Game::playerHandleInput() {
         _player.move(0.0f, velocity.y);
     }
     if (IsKeyDown(KEY_UP)) {
-        _camera.zoom += 0.05f;
+        _camera.zoom += 1.0f;
     }
     if (IsKeyDown(KEY_DOWN)) {
-        _camera.zoom -= 0.05f;
-    }
-
-    if (_world.checkCollidable(_player.getHitbox())) {
-        _player.setPosition(start_position);
+        _camera.zoom -= 1.0f;
     }
 
 }

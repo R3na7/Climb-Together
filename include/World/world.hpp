@@ -55,6 +55,8 @@ public:
 
 private:
     std::vector<std::unique_ptr<Entity>> _entities;
+    std::vector<b2Body*> _bodies;
+
     std::vector<InteractiveObject> _interactiv_objects;
     Player* _player;
 
@@ -77,14 +79,13 @@ private:
         std::vector<int> _grid;
         std::string _name;
         bool _is_visible;
-        bool _is_collision;
     };
 
     struct Tile {
         int _id;
         Rectangle _source_rec;
-        std::vector<Vector2> polygon;
-        bool _is_collision;
-        b2Body* _physics_body = nullptr;
+        // std::vector<Vector2> polygon;
+        // bool _is_collision;
+        // b2Body* _physics_body = nullptr;
     };
 };

@@ -6,6 +6,8 @@
 class Object {
 public:
 
+    void update();
+
     void scale(float height, float width);
     void scale(const Vector2 & scale);
 

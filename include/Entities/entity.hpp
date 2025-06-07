@@ -16,7 +16,6 @@ public:
 
     void updateHitboxes();
     void updateAnimation();
-    void update();
     void render() const;
     
     void addAnimation(const std::string& name);

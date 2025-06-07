@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="1" height="1" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+ <tileset firstgid="1" name="dangeon" tilewidth="16" tileheight="16" tilecount="768" columns="32">
+  <image source="dangeon.png" width="512" height="384"/>
+ </tileset>
+ <layer id="1" name="regions" width="1" height="1">
+  <data encoding="csv">
+2
+</data>
+ </layer>
+ <layer id="3" name="input_wall" width="1" height="1">
+  <data encoding="csv">
+306
+</data>
+ </layer>
+ <layer id="4" name="output_collision" width="1" height="1">
+  <data encoding="csv">
+82
+</data>
+ </layer>
+</map>

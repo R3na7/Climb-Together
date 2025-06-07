@@ -8,6 +8,11 @@ void Entity::render() const {
     
     Texture2D texture = _textures[0];
 
+    //DrawTexture(texture, _position.x * physics_scale, _position.y * physics_scale, WHITE);
+    DrawCircleV({_position.x * physics_scale, _position.y * physics_scale}, 10.0f, RED);
+
+    std::cout << "Coordinates on desktop: " << _position.x * physics_scale << " " << _position.y * physics_scale << std::endl;
+
     Rectangle source_rect = {
         0.0f, 0.0f,                       // Начало текстуры (x, y)
         (float)texture.width,              // Ширина исходной текстуры
@@ -15,15 +20,15 @@ void Entity::render() const {
     };
     
     Rectangle dest_rect = {
-        _position.x * 100.0f,                       // Центр по X
-        _position.y * 100.0f,                       // Центр по Y
-        texture.width * _scale.x * 100.0f,          // Ширина с масштабом
-        texture.height * _scale.y * 100.0f          // Высота с масштабом
+        _position.x * 100,                       // Центр по X
+        _position.y * 100,                       // Центр по Y
+        100,          // Ширина с масштабом
+        100          // Высота с масштабом
     };
     
     Vector2 origin = {
-        (texture.width * _scale.x * 100.0f) / 2,    // Центр по X
-        (texture.height * _scale.y * 100.0f) / 2    // Центр по Y
+        (_scale.x) / 2,    // Центр по X
+        (_scale.y) / 2    // Центр по Y
     };
     
     // Рисуем текстуру с центром в _position
@@ -37,25 +42,7 @@ void Entity::render() const {
     );
 
 
-    DrawRectangleLines(_hitbox.x, _hitbox.y, _hitbox.width, _hitbox.height, RED);
-    DrawCircleV(_position, 1.0f, RED);
-
-}
-
-void Entity::update() {
-    updateHitboxes();
-
-    if (_physics_body) {
-        b2Vec2 new_position = _physics_body->GetPosition();
-        _position = {new_position.x, new_position.y};
-        _rotation = _physics_body->GetAngle() * RAD2DEG;
-    }
-}
-
-void Entity::updateHitboxes() {
-    _hitbox.x = _position.x - _hitbox.width / 2.0f;
-    _hitbox.y = _position.y - _hitbox.height / 2.0f;
-    
+    DrawText(("x: " + std::to_string(_position.x) + " y:" + std::to_string(_position.y)).c_str(), _position.x, _position.y, 100.0f, RED);
 }
 
 void Entity::updateAnimation() {

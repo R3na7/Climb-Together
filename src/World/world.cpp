@@ -31,7 +31,6 @@ bool World::initWorld(const std::string& filename) {
 
         _tiles.resize(tilesets[0].getTileCount());
         for (auto & tile : tilesets[0].getTiles()) {
-            if (tile.ID >= _tiles.size()) continue;
 
             auto& worldTile = _tiles[tile.ID];
             worldTile._id = tile.ID;
@@ -42,18 +41,9 @@ bool World::initWorld(const std::string& filename) {
                 static_cast<float>(tilesets[0].getTileSize().y)
             };
 
-            for (auto& propertie : tile.properties) {
-                if (propertie.getName() == "collision") worldTile._is_collision = propertie.getStringValue() == "true" ? true : false;
-            }
-
             for (const auto & obj : tile.objectGroup.getObjects()) {
                 if (obj.getShape() == tmx::Object::Shape::Polygon) {
-                    for (const auto & point : obj.getPoints()) {
-                        worldTile.polygon.push_back({
-                            static_cast<float>(point.x),
-                            static_cast<float>(point.y)
-                        });
-                    }
+
                 }
             }
 
@@ -66,32 +56,42 @@ bool World::initWorld(const std::string& filename) {
                 Layer world_layer;
                 world_layer._name = tile_layer.getName();
                 world_layer._is_visible = tile_layer.getVisible();
-
-                for (const auto & propertie : tile_layer.getProperties()) {
-                    if (propertie.getName() == "collision") world_layer._is_collision = propertie.getBoolValue();
-                }
                 
                 for (int i = 0; i < tile_layer.getTiles().size(); ++i) {
                     world_layer._grid.push_back(tile_layer.getTiles()[i].ID - 1);
                 }
 
-                std::cout << world_layer._name << "----------------------" << std::endl;
-                for (int y = 0; y < _height; ++y) {
-                    for (int x = 0; x < _width; ++x) {
-                        std::cout << world_layer._grid[y * _width + x] << " ";
+                if (world_layer._name == "collision") {
+                    
+                    for (int y = 0; y < _height; ++y) {
+                        for (int x = 0; x < _width; ++x) {
+                            if (world_layer._grid[y * _width + x] != -1) {
+                                b2BodyDef box_body_def;
+                                box_body_def.type = b2_staticBody;
+                                
+                                b2Vec2 body_position {(x * _tile_size) / physics_scale, (y * _tile_size) / physics_scale};
+                                box_body_def.position.Set(body_position.x, body_position.y);
+                                box_body_def.fixedRotation = true;
+
+                                std::cout << body_position.x << " " << body_position.y << std::endl; 
+
+                                _bodies.push_back(_physics_world->CreateBody(&box_body_def));
+
+                                b2PolygonShape shape;
+                                shape.SetAsBox((_tile_size / physics_scale) / 2.0f, (_tile_size / physics_scale) / 2.0f);
+
+                                b2FixtureDef fixture_def;
+                                fixture_def.shape = &shape;
+                                fixture_def.density = 1.0f;
+                                fixture_def.friction = 0.3;
+
+                                _bodies.back()->CreateFixture(&fixture_def);
+                           }
+                        }
                     }
-                    std::cout << std::endl;
                 }
 
                 _layers.push_back(world_layer);
-
-                std::cout << _layers.back()._name << "----------------------" << std::endl;
-                for (int y = 0; y < _height; ++y) {
-                    for (int x = 0; x < _width; ++x) {
-                        std::cout << _layers.back()._grid[y * _width + x] << " ";
-                    }
-                    std::cout << std::endl;
-                }
 
             } else if (layer->getType() == tmx::Layer::Type::Object) {
                 const auto & objectGroup = layer->getLayerAs<tmx::ObjectGroup>();
@@ -161,19 +161,23 @@ bool World::initWorld(const std::string& filename) {
 void World::render() const {
 
     for (const auto & layer : _layers) {
+        if (!layer._is_visible) continue;
         for (int y = 0; y < _height; ++y) {
             for (int x = 0; x < _width; ++x) {
                 
                 int tile_index = layer._grid[y * _width + x];
 
-                const Tile& tile = _tiles[tile_index];
+                if (tile_index == -1) continue;
+
+                const Tile& tile = _tiles[tile_index]; 
+
                 Rectangle dest_rec = {
-                    static_cast<float>(x * tile._source_rec.width),
-                    static_cast<float>(y * tile._source_rec.height),
-                    tile._source_rec.width,
-                    tile._source_rec.height
+                    static_cast<float>(x * 100),
+                    static_cast<float>(y * 100),
+                    100,
+                    100
                 };
-                
+  
                 DrawTexturePro(
                     _tileset,
                     tile._source_rec,
@@ -198,10 +202,8 @@ void World::render() const {
 }
 
 void World::update() {
-
+ 
     _player->update();
-
-
 
 }
 void World::reset() {}
@@ -243,77 +245,6 @@ int                        World::getHeight()           const { return _height; 
 const Texture2D &          World::getTileset()          const { return _tileset; }
 const std::string &        World::getName()             const { return _name;    }
 const std::vector<Sound> & World::getBackgroundSounds() const { return _background_sounds; }
-
-bool World::checkCollidable(float x, float y) const {
-
-    int normal_x = x / _tile_size;
-    int normal_y = y / _tile_size;
-
-    for (auto & layer : _layers) {
-        if (layer._is_collision) {            
-            return layer._grid[normal_y * _width + normal_x] != -1;
-        }
-    }
-    return false;
-}
-
-bool World::checkCollidable(const Vector2 & point) const {
-
-    int normal_x = point.x / _tile_size;
-    int normal_y = point.y / _tile_size;
-
-    for (auto & layer : _layers) {
-        if (layer._is_collision) {
-            return layer._grid[normal_y * _width + normal_x] != -1;
-        }
-    }
-    return false;
-}
-
-bool World::checkCollidable(float x, float y, float width, float height) const {
-    
-    Vector2 left_top_point   {x, y};
-    Vector2 right_top_point {x + width, y};
-    Vector2 right_down_point {x + width, y + height};
-    Vector2 left_down_point  {x, y + height};
-
-    for (auto & layer : _layers) {
-        if (layer._is_collision) {
-
-        }
-    }
-
-    return false;
-
-}
-
-bool World::checkCollidable(const Rectangle & rec) const {
-
-    // Rectangle tile_hitbox = {
-    //     0.0f, 0.0f,
-    //     _tile_size, _tile_size
-    // };
-
-    // for (auto & layer : _layers) {
-    //     if (layer._is_collision) {
-    //         for (int y = 0; y < _height; ++y) {
-    //             for (int x = 0; x < _width; ++x) {
-    //                 tile_hitbox.x = x * _tile_size;
-    //                 tile_hitbox.y = y * _tile_size;
-
-    //                 if (layer._grid[y * _width + x] != -1) {
-    //                     if (CheckCollisionRecs(rec, tile_hitbox)) {
-    //                         return true;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    return false;
-}
-
 
 bool World::isFinished() const { return _is_finished; }
 

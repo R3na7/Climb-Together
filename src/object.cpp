@@ -1,4 +1,15 @@
 #include "object.hpp"
+#include <iostream>
+
+void Object::update() {
+
+    if (_physics_body) {
+        b2Vec2 new_position = _physics_body->GetPosition();
+        _position = {new_position.x, new_position.y};
+        std::cout << _position.x << " " << _position.y << std::endl;
+        _rotation = _physics_body->GetAngle() * RAD2DEG;
+    }
+}
 
 void Object::move(const Vector2& dest) {
     move(dest.x, dest.y); 
@@ -70,7 +81,7 @@ void Object::createPhysicsBody(b2World *world, b2BodyType body_type, bool fixed_
     b2FixtureDef fixture_def;
     fixture_def.shape = &shape;
     fixture_def.density = 1.0f;
-    fixture_def.friction = 0.3;
+    fixture_def.friction = 0.3f;
 
     _physics_body->CreateFixture(&fixture_def);
 }
