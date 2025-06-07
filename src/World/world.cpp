@@ -42,31 +42,32 @@ bool World::initWorld(const std::string& filename) {
 }
 
 void World::render() const {
-
-    for (const auto & layer : _layers) {
+    // Рендерим слои тайлов
+    for (const auto& layer : _layers) {
         if (!layer._is_visible) continue;
+        
         for (int y = 0; y < _height; ++y) {
             for (int x = 0; x < _width; ++x) {
-
                 int tile_index = layer._grid[y * _width + x];
+                if (tile_index == -1) continue;
 
                 const Tile& tile = _tiles[tile_index];
-                Rectangle dest_rec = {
-                    static_cast<float>(x * tile._source_rec.width),
-                    static_cast<float>(y * tile._source_rec.height),
-                    tile._source_rec.width,
-                    tile._source_rec.height
-                };
                 
+                Rectangle dest_rec = {
+                    static_cast<float>(x * _tile_size),
+                    static_cast<float>(y * _tile_size),
+                    static_cast<float>(_tile_size),
+                    static_cast<float>(_tile_size)
+                };
+
                 DrawTexturePro(
                     _tileset,
                     tile._source_rec,
                     dest_rec,
-                    {0, 0},
+                    {0, 0}, 
                     0.0f,
                     WHITE
                 );
-
             }
         }
     }
@@ -79,6 +80,29 @@ void World::render() const {
         _player->render();
     }
 
+    if (1) {
+        for (const auto& body : _bodies) {
+            b2Vec2 position = body->GetPosition();
+            float angle = body->GetAngle();
+            
+            for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+                if (f->GetType() == b2Shape::e_polygon) {
+                    b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+                    
+                    Vector2 vertices[b2_maxPolygonVertices];
+                    for (int i = 0; i < poly->m_count; ++i) {
+                        b2Vec2 vertex = body->GetWorldPoint(poly->m_vertices[i]);
+                        vertices[i] = {
+                            vertex.x * physics_scale,
+                            vertex.y * physics_scale
+                        };
+                    }
+                    
+                    DrawTriangleStrip(vertices, poly->m_count, Color{255, 0, 0, 128});
+                }
+            }
+        }
+    }
 }
 
 void World::update() {
