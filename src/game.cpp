@@ -39,7 +39,7 @@ void Game::update() {
     _window_width = GetScreenHeight();
     _window_height = GetScreenHeight();
 
-    if(_menus.at(_currentMenu).isActive())
+    if(_currentMenu != EMENU::NONE)
         updateMenu();
 
 }
@@ -95,9 +95,6 @@ void Game::playerHandleInput() {
 
 void Game::updateMenu() {
     switch (_currentMenu) {
-    case EMENU::NONE:
-        break;
-
     case EMENU::START: {
         GameMenu& start_menu = _menus.at(_currentMenu);
         start_menu.update();
