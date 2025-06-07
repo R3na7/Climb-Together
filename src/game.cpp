@@ -36,7 +36,7 @@ void Game::update() {
     _physics_world->Step(1.0f / 60.0f, 8, 3);
     _world.update();
 
-    _window_width = GetScreenHeight();
+    _window_width = GetScreenWidth();
     _window_height = GetScreenHeight();
 
     if(_currentMenu != EMENU::NONE)
@@ -100,11 +100,11 @@ void Game::updateMenu() {
         start_menu.update();
 
         Button& play_button = start_menu.getButton("PlayButton");
-        play_button.setSize(Vector2{ _window_width / 2, _window_height / 4});
+        play_button.setSize(Vector2{ _window_width / 4, _window_height / 4});
         play_button.setPosition(Vector2{98,100});
 
         Button& exit_button = start_menu.getButton("ExitButton");
-        exit_button.setSize(Vector2{ _window_width / 2, _window_height / 4});
+        exit_button.setSize(Vector2{ _window_width / 4, _window_height / 4});
         exit_button.setPosition(Vector2{100,play_button.getSize().y + 100});
         break;
     }
