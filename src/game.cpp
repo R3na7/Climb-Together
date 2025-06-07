@@ -27,6 +27,8 @@ Game::Game() :
     _camera.rotation = 0.0f;
     _camera.zoom = 1.0f;
 
+
+    
     
 }
 
@@ -48,7 +50,7 @@ void Game::update() {
     _window_width = GetScreenWidth();
     _window_height = GetScreenHeight();
     
-    if(0) {
+    if(_currentMenu != EMENU::NONE) {
         updateMenu();
     }
     else {
@@ -63,12 +65,22 @@ void Game::update() {
         if (IsKeyDown(KEY_DOWN)) {
             _camera.zoom *= 0.9f;
         }
-        if (IsKeyDown(KEY_A)) {
-            _player.applyImpulse({0.0f, 1.0f});
+
+        b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
+        float desiredVel = 0;
+        
+        if (IsKeyDown(KEY_RIGHT)) {
+            desiredVel = 5.0f; // Скорость движения
         }
-        if (IsKeyDown(KEY_D)) {
-            _player.applyImpulse({1.0f, 0.0f});
+        if (IsKeyDown(KEY_LEFT)) {
+            desiredVel = -5.0f;
         }
+        
+        // Применяем силу для движения
+        float velChange = desiredVel - vel.x;
+        float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
+        _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
+
     }
 
 }
@@ -76,7 +88,7 @@ void Game::update() {
 void Game::render() {
     BeginDrawing();
     ClearBackground(BLACK); 
-    if(0) {
+    if(_currentMenu != EMENU::NONE) {
         _menus.at(_currentMenu).render();
     }
     else {

@@ -6,7 +6,6 @@ void Object::update() {
     if (_physics_body) {
         b2Vec2 new_position = _physics_body->GetPosition();
         _position = {new_position.x, new_position.y};
-        std::cout << _position.x << " " << _position.y << std::endl;
         _rotation = _physics_body->GetAngle() * RAD2DEG;
     }
 }

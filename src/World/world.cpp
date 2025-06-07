@@ -62,31 +62,34 @@ bool World::initWorld(const std::string& filename) {
                 }
 
                 if (world_layer._name == "collision") {
-                    
                     for (int y = 0; y < _height; ++y) {
                         for (int x = 0; x < _width; ++x) {
                             if (world_layer._grid[y * _width + x] != -1) {
                                 b2BodyDef box_body_def;
                                 box_body_def.type = b2_staticBody;
                                 
-                                b2Vec2 body_position {(x * _tile_size) / physics_scale, (y * _tile_size) / physics_scale};
+                                b2Vec2 body_position {
+                                    (x * _tile_size + _tile_size / 2.0f) / physics_scale,
+                                    (y * _tile_size + _tile_size / 2.0f) / physics_scale
+                                };
                                 box_body_def.position.Set(body_position.x, body_position.y);
                                 box_body_def.fixedRotation = true;
-
-                                std::cout << body_position.x << " " << body_position.y << std::endl; 
 
                                 _bodies.push_back(_physics_world->CreateBody(&box_body_def));
 
                                 b2PolygonShape shape;
-                                shape.SetAsBox((_tile_size / physics_scale) / 2.0f, (_tile_size / physics_scale) / 2.0f);
+                                shape.SetAsBox(
+                                    (_tile_size / physics_scale) / 2.0f,
+                                    (_tile_size / physics_scale) / 2.0f
+                                );
 
                                 b2FixtureDef fixture_def;
                                 fixture_def.shape = &shape;
                                 fixture_def.density = 1.0f;
-                                fixture_def.friction = 0.3;
+                                fixture_def.friction = 0.3f;
 
                                 _bodies.back()->CreateFixture(&fixture_def);
-                           }
+                            }
                         }
                     }
                 }
@@ -159,34 +162,32 @@ bool World::initWorld(const std::string& filename) {
 }
 
 void World::render() const {
-
-    for (const auto & layer : _layers) {
+    // Рендерим слои тайлов
+    for (const auto& layer : _layers) {
         if (!layer._is_visible) continue;
+        
         for (int y = 0; y < _height; ++y) {
             for (int x = 0; x < _width; ++x) {
-                
                 int tile_index = layer._grid[y * _width + x];
-
                 if (tile_index == -1) continue;
 
-                const Tile& tile = _tiles[tile_index]; 
-
+                const Tile& tile = _tiles[tile_index];
+                
                 Rectangle dest_rec = {
-                    static_cast<float>(x * 100),
-                    static_cast<float>(y * 100),
-                    100,
-                    100
+                    static_cast<float>(x * _tile_size),
+                    static_cast<float>(y * _tile_size),
+                    static_cast<float>(_tile_size),
+                    static_cast<float>(_tile_size)
                 };
-  
+
                 DrawTexturePro(
                     _tileset,
                     tile._source_rec,
                     dest_rec,
-                    {0, 0},
+                    {0, 0}, 
                     0.0f,
                     WHITE
                 );
-
             }
         }
     }
@@ -199,6 +200,29 @@ void World::render() const {
         _player->render();
     }
 
+    if (1) {
+        for (const auto& body : _bodies) {
+            b2Vec2 position = body->GetPosition();
+            float angle = body->GetAngle();
+            
+            for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+                if (f->GetType() == b2Shape::e_polygon) {
+                    b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+                    
+                    Vector2 vertices[b2_maxPolygonVertices];
+                    for (int i = 0; i < poly->m_count; ++i) {
+                        b2Vec2 vertex = body->GetWorldPoint(poly->m_vertices[i]);
+                        vertices[i] = {
+                            vertex.x * physics_scale,
+                            vertex.y * physics_scale
+                        };
+                    }
+                    
+                    DrawTriangleStrip(vertices, poly->m_count, Color{255, 0, 0, 128});
+                }
+            }
+        }
+    }
 }
 
 void World::update() {
