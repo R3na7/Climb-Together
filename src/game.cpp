@@ -4,24 +4,21 @@
 #include <raymath.h>
 
 Game::Game()
-:   window_width(GetScreenWidth()), window_height(GetScreenHeight()), 
+:   _window_width(GetScreenWidth()), _window_height(GetScreenHeight()), 
     _menu(std::make_unique<StartMenu>(_isRunning)),
     _player({LoadTexture(RES_PATH"player.png")})
 {
-    SetTargetFPS(120);
+    SetTargetFPS(60);
 
-    _world.setPlayer(&_player);
+    b2Vec2 gravity(0.0f, 9.8f);
+    _physics_world = std::make_unique<b2World>(gravity);
 
-    _camera = {0};
-    _camera.offset = {static_cast<float>(window_width) / 2, static_cast<float>(window_height) / 2}; 
-    _camera.target = _player.getPosition();
-    _camera.rotation = 0.0f;  
-    _camera.zoom = 1.0f;      
+    _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
+    _world.setPlayer(&_player);    
+    _world.initPhysics(_physics_world.get());
 }
 
 void Game::start() {
-    
-    _world.initWorld(RES_PATH"testWorld.tmx");
 
     while(!WindowShouldClose() && _isRunning) {
         update();
@@ -31,19 +28,11 @@ void Game::start() {
     CloseWindow();
 }
 
-
 void Game::update() {
-    // if(_menu->isActive()) {
-    //     _menu->update();
-    // }
-    // else {
 
+    _physics_world->Step(1.0f / 60.0f, 8, 3);
     _world.update();
-        
-    playerHandleInput();
-    updateCamera();
 
-    //}
 }
 
 void Game::playerHandleInput() {
@@ -81,24 +70,12 @@ void Game::playerHandleInput() {
 }
 
 void Game::render() {
+
     BeginDrawing();
     ClearBackground(BLACK);
 
-    // if(_menu->isActive()) {
-    //     _menu->render();
-    // }
-    // else {
-        BeginMode2D(_camera);
+    _world.render(); 
 
-            _world.render(); 
-        
-        EndMode2D();
-
-    //}
     EndDrawing();
     
-}
-
-void Game::updateCamera() {
-    _camera.target = _player.getPosition();
 }

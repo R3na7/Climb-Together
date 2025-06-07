@@ -12,3 +12,5 @@ enum RotationStates : size_t {
     Down = 2,
     Left = 3
 };
+
+const float _physics_scale = 100.0f;

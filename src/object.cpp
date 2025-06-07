@@ -55,3 +55,50 @@ const Vector2 & Object::getPosition()     const { return _position; }
 const Vector2 & Object::getScale()        const { return _scale; }
 const Vector2 & Object::getVelocity()     const { return _velocity; }
 const Vector2 & Object::getAcceleration() const { return _acceleration; }
+
+void Object::createPhysicsBody(b2World *world, b2BodyType body_type, bool fixed_rotation) {
+    b2BodyDef body_def;
+    body_def.type = body_type;
+    body_def.position.Set(_position.x, _position.y);
+    body_def.fixedRotation = fixed_rotation;
+    
+    _physics_body = world->CreateBody(&body_def);
+
+    b2PolygonShape shape;
+    shape.SetAsBox(_scale.x / 2.0f, _scale.y / 2.0f);
+
+    b2FixtureDef fixture_def;
+    fixture_def.shape = &shape;
+    fixture_def.density = 1.0f;
+    fixture_def.friction = 0.3;
+
+    _physics_body->CreateFixture(&fixture_def);
+}
+
+void Object::destroyPhysicsBody() {
+    if (_physics_body && _physics_body->GetWorld()) {
+        _physics_body->GetWorld()->DestroyBody(_physics_body);
+        _physics_body = nullptr;
+    }
+}
+
+b2Body* Object::getPhysicsBody() const { return _physics_body; }
+
+void Object::applyForce(const Vector2& force) {
+    if (_physics_body) {
+        _physics_body->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
+    }
+}
+
+void Object::applyImpulse(const Vector2& impulse) {
+    if (_physics_body) {
+        _physics_body->ApplyLinearImpulse(b2Vec2(impulse.x, impulse.y), 
+                               _physics_body->GetWorldCenter(), true);
+    }
+}
+
+void Object::setLinearVelocity(const Vector2& velocity) {
+    if (_physics_body) {
+        _physics_body->SetLinearVelocity(b2Vec2(velocity.x, velocity.y));
+    }
+}

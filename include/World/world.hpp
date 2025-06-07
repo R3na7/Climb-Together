@@ -13,7 +13,7 @@ class World {
     struct Layer;
     struct Tile; 
 public:
-    
+
     World() = default;
     
     World(const World & world) = delete;
@@ -51,14 +51,13 @@ public:
 
     bool isFinished() const;
     
-    ~World() = default;
+    void initPhysics(b2World* world);
 
 private:
     std::vector<std::unique_ptr<Entity>> _entities;
     std::vector<InteractiveObject> _interactiv_objects;
     Player* _player;
 
-    
     std::vector<Layer> _layers;
     std::vector<Tile> _tiles;
 
@@ -72,6 +71,8 @@ private:
     std::string _name;
     bool _is_finished;
 
+    b2World* _physics_world = nullptr;
+
     struct Layer {
         std::vector<int> _grid;
         std::string _name;
@@ -84,5 +85,6 @@ private:
         Rectangle _source_rec;
         std::vector<Vector2> polygon;
         bool _is_collision;
+        b2Body* _physics_body = nullptr;
     };
 };

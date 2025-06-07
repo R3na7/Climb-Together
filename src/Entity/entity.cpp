@@ -15,15 +15,15 @@ void Entity::render() const {
     };
     
     Rectangle dest_rect = {
-        _position.x,                       // Центр по X
-        _position.y,                       // Центр по Y
-        texture.width * _scale.x,          // Ширина с масштабом
-        texture.height * _scale.y          // Высота с масштабом
+        _position.x * 100.0f,                       // Центр по X
+        _position.y * 100.0f,                       // Центр по Y
+        texture.width * _scale.x * 100.0f,          // Ширина с масштабом
+        texture.height * _scale.y * 100.0f          // Высота с масштабом
     };
     
     Vector2 origin = {
-        (texture.width * _scale.x) / 2,    // Центр по X
-        (texture.height * _scale.y) / 2    // Центр по Y
+        (texture.width * _scale.x * 100.0f) / 2,    // Центр по X
+        (texture.height * _scale.y * 100.0f) / 2    // Центр по Y
     };
     
     // Рисуем текстуру с центром в _position
@@ -44,6 +44,12 @@ void Entity::render() const {
 
 void Entity::update() {
     updateHitboxes();
+
+    if (_physics_body) {
+        b2Vec2 new_position = _physics_body->GetPosition();
+        _position = {new_position.x, new_position.y};
+        _rotation = _physics_body->GetAngle() * RAD2DEG;
+    }
 }
 
 void Entity::updateHitboxes() {

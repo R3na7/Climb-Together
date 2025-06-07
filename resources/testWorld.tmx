@@ -94,12 +94,5 @@
 310,314,318,306,306,318,314,310,306,306
 </data>
  </layer>
- <objectgroup id="4" name="Entitye">
-  <object id="2" name="player" x="33.2596" y="529.119" width="13.7574" height="13.9232">
-   <properties>
-    <property name="hp" type="int" value="3"/>
-    <property name="name" value="Renat"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup id="4" name="player"/>
 </map>

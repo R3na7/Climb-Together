@@ -4,17 +4,12 @@
 Player::Player() 
 : Entity(), _name("Shamil") {
 
-    scale(0.15f, 0.15f);
+    //scale(0.15f, 0.15f);
 
 }
 
 Player::Player(const std::array<Texture2D,DIRECTIONS_COUNT> _textures, const std::string & name) 
 : Entity(_textures), _name(name) {}
-
-void Player::update() {
-    updateAnimation();
-    updateHitboxes(_position.x, _position.y);
-}
 
 bool Player::isWASDKeysdown() const {
     if (IsKeyDown(KEY_A))

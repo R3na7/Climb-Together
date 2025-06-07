@@ -187,6 +187,10 @@ void World::render() const {
         }
     }
 
+    for (auto& entity : _entities) {
+        entity->render();
+    }
+
     if (_player) {
         _player->render();
     }
@@ -196,6 +200,8 @@ void World::render() const {
 void World::update() {
 
     _player->update();
+
+
 
 }
 void World::reset() {}
@@ -283,30 +289,37 @@ bool World::checkCollidable(float x, float y, float width, float height) const {
 
 bool World::checkCollidable(const Rectangle & rec) const {
 
-    Rectangle tile_hitbox = {
-        0.0f, 0.0f,
-        _tile_size, _tile_size
-    };
+    // Rectangle tile_hitbox = {
+    //     0.0f, 0.0f,
+    //     _tile_size, _tile_size
+    // };
 
-    for (auto & layer : _layers) {
-        if (layer._is_collision) {
-            for (int y = 0; y < _height; ++y) {
-                for (int x = 0; x < _width; ++x) {
-                    tile_hitbox.x = x * _tile_size;
-                    tile_hitbox.y = y * _tile_size;
+    // for (auto & layer : _layers) {
+    //     if (layer._is_collision) {
+    //         for (int y = 0; y < _height; ++y) {
+    //             for (int x = 0; x < _width; ++x) {
+    //                 tile_hitbox.x = x * _tile_size;
+    //                 tile_hitbox.y = y * _tile_size;
 
-                    if (layer._grid[y * _width + x] != -1) {
-                        if (CheckCollisionRecs(rec, tile_hitbox)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //                 if (layer._grid[y * _width + x] != -1) {
+    //                     if (CheckCollisionRecs(rec, tile_hitbox)) {
+    //                         return true;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     return false;
 }
 
 
 bool World::isFinished() const { return _is_finished; }
+
+void World::initPhysics(b2World* world) {
+    _physics_world = world;
+
+    
+}
+

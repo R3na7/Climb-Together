@@ -11,9 +11,6 @@ public:
     Player();
 
     Player(const std::array<Texture2D,DIRECTIONS_COUNT> _textures, const std::string & name = "Player");
-    
-    void update();
-    //void render() const;
 
     void setName(const std::string & name);
     void setHp(int hp);
