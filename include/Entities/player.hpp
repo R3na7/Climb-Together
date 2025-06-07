@@ -14,6 +14,7 @@ public:
 
     void setName(const std::string & name);
     void setHp(int hp);
+    void render() const;
     
     const std::string & getName() const;
     int getHp() const;

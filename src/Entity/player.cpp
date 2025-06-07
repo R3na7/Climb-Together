@@ -24,63 +24,65 @@ bool Player::isWASDKeysdown() const {
     return false;
 }
 
-// void Player::render() const {
+void Player::render() const {
+    //if (!_is_visible) return;
+
+    // Преобразуем координаты из метров в пиксели
+    float screen_x = _position.x * physics_scale;
+    float screen_y = _position.y * physics_scale;
+
+    // Получаем текстуру для текущего направления
+    Texture2D texture = _textures[0];
+
+    // Параметры исходной текстуры (весь спрайт)
+    Rectangle source_rect = {
+        0.0f, 
+        0.0f,
+        (float)texture.width,
+        (float)texture.height
+    };
     
-//     const Texture2D& texture = _textures[_rotation_state];
-
-//     Vector2 origin = {
-//         (texture.width * _scale.x) / 2,    // Центр по X
-//         (texture.height * _scale.y) / 2    // Центр по Y
-//     };
+    // Параметры назначения (на экране)
+    Rectangle dest_rect = {
+        screen_x,                  // X позиция в пикселях
+        screen_y,                  // Y позиция в пикселях
+        _scale.x * physics_scale,  // Ширина с учетом масштаба
+        _scale.y * physics_scale   // Высота с учетом масштаба
+    };
     
-//     if(isWASDKeysdown()) {
-//         switch (_rotation_state) {
-//             case RotationStates::Down:
-//                 _animation_component.draw(_position);
-//                 break;
-            
-//             case RotationStates::Up:
-//                 _animation_component.draw(_position);    
-//                 break;
+    // Точка вращения (центр)
+    Vector2 origin = {
+        _scale.x * physics_scale * 0.5f,  // Половина ширины
+        _scale.y * physics_scale * 0.5f   // Половина высоты
+    };
+    
+    // Рисуем текстуру
+    DrawTexturePro(
+        texture,
+        source_rect,
+        dest_rect,
+        origin,
+        0.0f,       // Угол поворота (можно добавить поле при необходимости)
+        WHITE
+    );
 
-//             case RotationStates::Right:
-//                 _animation_component.draw(_position);
-//                 break;
-            
-//             case RotationStates::Left:
-//                 _animation_component.draw(_position);
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-//     else {
+    // Отладочная информация (опционально)
+    if (0) {
+        // Красный круг в центре позиции
+        DrawCircleV({screen_x, screen_y}, 5.0f, RED);
         
-//         Rectangle source_rect = {
-//             0.0f, 0.0f,                       // Начало текстуры (x, y)
-//             (float)texture.width,              // Ширина исходной текстуры
-//             (float)texture.height              // Высота исходной текстуры
-//         };
-        
-//         Rectangle dest_rect = {
-//             _position.x,                       // Центр по X
-//             _position.y,                       // Центр по Y
-//             texture.width * _scale.x,          // Ширина с масштабом
-//             texture.height * _scale.y          // Высота с масштабом
-//         };
-        
-//         DrawTexturePro(
-//             texture,
-//             source_rect,
-//             dest_rect,
-//             origin,
-//             0.0f,                              // Угол поворота (если нужно)
-//             WHITE                              // Цвет (можно добавить поле)
-//         );
-//     }
+        // Текст с координатами
+        std::string coord_text = "x: " + std::to_string(_position.x) + " y: " + std::to_string(_position.y);
+        DrawText(
+            coord_text.c_str(), 
+            screen_x + 20,  // Смещаем текст вправо от объекта
+            screen_y - 20,  // И немного вверх
+            20,             // Размер шрифта
+            RED
+        );
+    }
 
-
-// }
+}
 
 void Player::setName(const std::string & name) {
     _name = name;

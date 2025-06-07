@@ -35,7 +35,7 @@ Game::Game() :
 }
 
 void Game::start() {
-
+    _player.scale({5,5});
     while(!WindowShouldClose() && _isRunning) {
         update();
         render();
@@ -58,9 +58,11 @@ void Game::update() {
     else {
         _physics_world->Step(1.0f / 60.0f, 8, 3);
         _world.update();
+        playerHandleInput();
 
         //_camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
         
+<<<<<<< HEAD
         // if (IsKeyDown(KEY_UP)) {
         //     _camera.zoom *= 1.1f;
         // }
@@ -85,6 +87,9 @@ void Game::update() {
         // float velChange = desiredVel - vel.x;
         // float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
         // _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
+=======
+
+>>>>>>> 9dca9bd (edit)
 
     }
 
@@ -110,7 +115,58 @@ void Game::render() {
 void Game::playerHandleInput() {
     // Vector2 velocity = _player.getVelocity();
 
+<<<<<<< HEAD
     // Vector2 start_position = _player.getPosition();
+    
+    // if (IsKeyDown(KEY_A)) 
+    // {
+    //     _player.move(-velocity.x, 0.0f);
+    // }
+    // if (IsKeyDown(KEY_D)) 
+    // {
+    //     _player.move(velocity.x, 0.0f);
+    // }
+    // if (IsKeyDown(KEY_W)) 
+    // {
+    //     _player.move(0.0f, -velocity.y);
+    // }
+    // if (IsKeyDown(KEY_S)) 
+    // {
+    //     _player.move(0.0f, velocity.y);
+    // }
+    // if (IsKeyDown(KEY_UP)) {
+    //     _camera.zoom += 1.0f;
+    // }
+    // if (IsKeyDown(KEY_DOWN)) {
+    //     _camera.zoom -= 1.0f;
+    // }
+=======
+    Vector2 start_position = _player.getPosition();
+    if (IsKeyDown(KEY_UP)) {
+        _camera.zoom *= 1.1f;
+    }
+    if (IsKeyDown(KEY_DOWN)) {
+        _camera.zoom *= 0.9f;
+    }
+>>>>>>> 9dca9bd (edit)
+
+    b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
+    float desiredVel = 0;
+    
+    if (IsKeyDown(KEY_RIGHT)) {
+        desiredVel = 5.0f; // Скорость движения
+    }
+    if (IsKeyDown(KEY_LEFT)) {
+        desiredVel = -5.0f;
+    }
+    if(GetKeyPressed() == KEY_SPACE) {
+        _player.getPhysicsBody()->ApplyLinearImpulse({0,-10},{0,10},1);
+    }
+    
+    // Применяем силу для движения
+    float velChange = desiredVel - vel.x;
+    float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
+    _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
     
     // if (IsKeyDown(KEY_A)) 
     // {
