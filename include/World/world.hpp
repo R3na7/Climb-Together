@@ -40,6 +40,8 @@ public:
     void setTileset(const Texture2D & tileset);
     void setFinished(bool _finished);
 
+    Vector2 getWorldCenter() const;
+    
     const Player *             getPlayer() const;
     const Layer &              getLayer(const std::string & name) const;
     int                        getWidth() const;
@@ -47,6 +49,8 @@ public:
     const Texture2D &          getTileset() const;
     const std::string &        getName() const;
     const std::vector<Sound> & getBackgroundSounds() const;
+
+    std::vector<std::unique_ptr<Entity>>& getEntityes();
 
     bool isFinished() const;
     
