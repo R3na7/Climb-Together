@@ -44,9 +44,10 @@ bool World::initWorld(const std::string& filename) {
 void World::render() const {
 
     for (const auto & layer : _layers) {
+        if (!layer._is_visible) continue;
         for (int y = 0; y < _height; ++y) {
             for (int x = 0; x < _width; ++x) {
-                
+
                 int tile_index = layer._grid[y * _width + x];
 
                 const Tile& tile = _tiles[tile_index];
