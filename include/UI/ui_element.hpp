@@ -3,25 +3,43 @@
 #include <functional>
 #include <memory>
 
+
 class UIElement {
 public:
 
     using key_t = int;
 
-    UIElement(const Vector2& position, const Vector2& size, const std::shared_ptr<Texture2D>& texture); 
+    UIElement(const std::shared_ptr<Texture2D>& texture);
+
+    UIElement(const Vector2& source_size, const Vector2& texture_coords, const std::shared_ptr<Texture2D>& texture); 
 
     ~UIElement() = default;
 
-    virtual void render() const = 0;
+    void render() const;
+
+    void setPosition(const Vector2& position);
+
+    void setPosition(float x, float y);
+
+    void setSize(const Vector2& size);
+
+    const Vector2& getPosition() const;
+
+    const Vector2& getSize() const;
+
+    void setNPatchLayout(NPatchLayout layout); 
+
+public:
+
+    Color color_state = WHITE;
 
 protected:
-
-
-    void draw();
 
     NPatchInfo _npatch;
 
     Vector2 _position;
+
+    float _rotation;
 
     Vector2 _size;
 

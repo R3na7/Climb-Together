@@ -6,27 +6,17 @@ class Button : public UIElement {
 
 public:
 
-    Button();
+    explicit Button(const std::shared_ptr<Texture2D>& texture);
 
-    Button(const Vector2& position, const Vector2& size, const std::shared_ptr<Texture2D>& texture);
-
-    Button(const Vector2& position, const std::shared_ptr<Texture2D>& texture);
+    Button(const Vector2& source_size, const Vector2& texture_coords, const std::shared_ptr<Texture2D>& texture);
 
     ~Button() = default;
 
     void update();
 
-    void render() const override;
-
     void setSelection(const std::function<bool()>& selection, const std::function<void()>& action_hover);
-    void setActionOnClick(key_t button, const std::function<void()>& action_on_click);
-    
-    void setPosition(const Vector2& position);
-    void setPosition(float x, float y);
 
-    Vector2 getPosition() const;
-    float getWidth() const;
-    float getHeight() const;
+    void setActionOnClick(key_t button, const std::function<void()>& action_on_click);
 
     bool isSelected() const;
 
@@ -37,9 +27,8 @@ private:
 
     bool _isSelected = false;
 
-    Color _color_state = GRAY;
-
     std::function<bool()> _button_selection;
+
     std::function<void()> _action_hover;
 
     struct {

@@ -6,8 +6,8 @@
 
 int main(void) {
 
-    
-    InitWindow(1280, 720, "Teleportation 3000");
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE); 
+    InitWindow(1280, 720, "Climb Together!");
     InitAudioDevice();
 
     

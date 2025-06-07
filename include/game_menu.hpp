@@ -2,69 +2,44 @@
 
 #include <raylib.h>
 #include <UI/button.hpp>
-#include <Animation/animation.hpp>
-#define STORY_TEXTURE_NUMBER 4
+#include <map>
+#include <string>
 
-class Game;
+#include <iostream>
 
 class GameMenu {
 public:
 
-    GameMenu();
+    explicit GameMenu(const std::shared_ptr<Texture2D>& background_texture);
     
-    virtual void update() = 0;
-    virtual void render() const = 0;
-    bool isActive();
+    ~GameMenu() = default;
 
-    virtual ~GameMenu() {};
+    void update();
+
+    void render() const;
+    
+    void addButton(const std::string& name, const Button& button);
+
+    void setButtonSize(const std::string& name, const Vector2& size);
+
+    void setButtonPosition(const std::string &name, const Vector2 &position);
+
+    Button& getButton(const std::string& name);
+
+    const Button& getButton(const std::string& name) const;
+
+    void setActive(bool is_active);
+
+    bool isActive() const;
 
 protected:
+
+    UIElement _background;
+
+    std::map<std::string,Button> _buttons;
+
     bool _is_active;
 };
 
-class StartMenu : public GameMenu {
-public:
-  
-    StartMenu(bool& isGameRunning);
-    
-    ~StartMenu();
-
-    void update() override;
-
-    void render() const override;
-
-private:
-    void drawBackground();
-
-    bool& _isGameRunning;
-
-    Music _background_music;
-    Texture2D tex_story_anim;
-    
-
-    Button _start_button;
-    Button _exit_button;
-
-    const Button* _selected_button = &_start_button;
-    
-    struct {
-        Texture2D texture;
-        float x_pos;
-        float y_pos;
-    } _arrow;
-
-    struct {
-
-        Texture2D texture;
-
-    } _background;
-
-};
 
 
-class PauseMenu : public GameMenu {
-public:
-    void update() override;
-    void render() const override;
-
-};
