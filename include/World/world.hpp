@@ -6,6 +6,10 @@
 #include <memory>
 #include <sstream>
 
+#include <tmxlite/Map.hpp>
+#include <tmxlite/TileLayer.hpp>
+#include <tmxlite/ObjectGroup.hpp>
+
 #include "player.hpp"
 #include "interactivable.hpp"
 
@@ -44,16 +48,18 @@ public:
     const std::string &        getName() const;
     const std::vector<Sound> & getBackgroundSounds() const;
 
-    bool checkCollidable(float x, float y) const;
-    bool checkCollidable(const Vector2 & point) const;
-    bool checkCollidable(float x, float y, float width, float height) const;
-    bool checkCollidable(const Rectangle & point) const;
-
     bool isFinished() const;
     
     void initPhysics(b2World* world);
 
 private:
+
+    void loadMapProperties(const tmx::Map & map);
+    void parsingTile(const std::vector<tmx::Tileset> & tilesets);
+    void loadTileLayer(const tmx::Layer::Ptr & layer);
+    void loadObjectLayer(const tmx::Layer::Ptr & layer);
+    void loadCollisionLayer(Layer & layer);
+
     std::vector<std::unique_ptr<Entity>> _entities;
     std::vector<b2Body*> _bodies;
 
@@ -84,8 +90,5 @@ private:
     struct Tile {
         int _id;
         Rectangle _source_rec;
-        // std::vector<Vector2> polygon;
-        // bool _is_collision;
-        // b2Body* _physics_body = nullptr;
     };
 };
