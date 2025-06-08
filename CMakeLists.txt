@@ -4,7 +4,7 @@ project(Climb_Together)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_CXX_FLAGS "-fsanitize=address,leak,undefined")
 if(MINGW)
     set(CMAKE_CXX_FLAGS "-static -mwindows")
 endif()

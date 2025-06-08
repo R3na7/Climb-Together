@@ -2,23 +2,27 @@
 #include <iostream>
 #include "player.hpp"
 #include <raymath.h>
+#include <b2_rope.h>
+#include <b2_joint.h>
+
 
 Game::Game() : 
     _window_width(GetScreenWidth()),
     _window_height(GetScreenHeight()),
     _currentMenu(EMENU::START),
-    _player({LoadTexture(RES_PATH"StandingUp.png")}),
-    _second_player({LoadTexture(RES_PATH"player.png")}) {
+    _player({LoadTexture(RES_PATH"player.png")}),
+    _second_player({LoadTexture(RES_PATH"StandingUp.png")}),
+    _current_player(&_player) {
     SetTargetFPS(120);
     
     
     initStartMenu(RES_PATH"example.jpg");
-    initPauseMenu(RES_PATH"example.jpg");
+    initPauseMenu(RES_PATH"pause_background.png");
     
     b2Vec2 gravity(0.0f, 1.0f);
     _physics_world = std::make_unique<b2World>(gravity);
-    _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
 
+    _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
     _second_player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
 
     _world.setPlayer(&_player, &_second_player);    
@@ -27,7 +31,7 @@ Game::Game() :
 
     _camera = { 0 };
     _camera.rotation = 0.0f;
-    _camera.zoom = 5.0f;
+    _camera.zoom = 2.0f;
 
 
     
@@ -69,7 +73,7 @@ void Game::update() {
 
             _world.update();
 
-            _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
+            _camera.target = { _current_player->getPosition().x * physics_scale, _current_player->getPosition().y * physics_scale};
             
             playerHandleInput();
         
@@ -106,11 +110,11 @@ void Game::render() {
 }
 
 void Game::playerHandleInput() {
-    Vector2 velocity = _player.getVelocity();
+    Vector2 velocity = _current_player->getVelocity();
 
-    Vector2 start_position = _player.getPosition();
+    Vector2 start_position = _current_player->getPosition();
 
-    b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
+    b2Vec2 vel = _current_player->getPhysicsBody()->GetLinearVelocity();
     float velocity_x = 0;
     float velocity_y = 0;
     
@@ -137,6 +141,12 @@ void Game::playerHandleInput() {
     if (IsKeyDown(KEY_DOWN)) {
         _camera.zoom *= 0.9f;
     }
+    // if (IsKeyDown(KEY_UP)) {
+    //     velocity_y = -5.0f;
+    // }
+    // if (IsKeyDown(KEY_DOWN)) {
+    //     velocity_y = 5.0f;
+    // }
 
 
     
@@ -146,13 +156,22 @@ void Game::playerHandleInput() {
     if (IsKeyDown(KEY_LEFT)) {
         velocity_x = -5.0f;
     }
-
+    if(IsKeyPressed(KEY_E)) {
+        if(_current_player == &_player) {
+            _current_player = &_second_player;
+        }
+        else {
+            _current_player = &_player;
+        }
+    }
 
     
     // Применяем силу для движения
     float velChange = velocity_x - vel.x;
+    float velChange_y = velocity_y - vel.y;
     float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
-    _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
+    // float force_y = _player.getPhysicsBody()->GetMass() * velChange_y / (1/60.0f);
+    _current_player->getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
 
 }
 

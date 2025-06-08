@@ -63,6 +63,7 @@ private:
 
     Player _player;
     Player _second_player;
+    Player* _current_player;
 
     Camera2D _camera;
 };

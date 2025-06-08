@@ -36,7 +36,7 @@ public:
     void removeEntity(int id);
     void removeInteractiveObject(int id);
 
-    void setPlayer(Player* player,Player* secondPlayer);
+    void setPlayer(Player* player,Player* second_player);
     void setTileset(const Texture2D & tileset);
     void setFinished(bool _finished);
 

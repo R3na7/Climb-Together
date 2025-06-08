@@ -83,6 +83,9 @@ void World::render() const {
     if (_player) {
         _player->render();
     }
+    if(_second_player) {
+        _second_player->render();
+    }
 
     if (1) {
         for (const auto& body : _bodies) {
@@ -128,12 +131,12 @@ void World::update() {
     }
  
     _player->update();
+    _second_player->update();
     std::cout << _player->getPosition().x << " " << _player->getPosition().y << "\n";
     std::cout << _game_over_recs[0].x << " " <<  _game_over_recs[0].y << "\n";
 
 }
 void World::reset() {
-    this->~World();
 }
 
 void World::addEntity(const Entity & entity) {}
@@ -147,9 +150,9 @@ void World::addBackgroundSound(const Sound & sound) {
 void World::removeEntity(int id) {}
 void World::removeInteractiveObject(int id) {}
 
-void World::setPlayer(Player* player, Player* secondPlayer) {
+void World::setPlayer(Player* player, Player* second_player) {
     _player = player;
-    _second_player = _second_player;
+    _second_player = second_player;
 }
 
 void World::setTileset(const Texture2D & tileset) {
@@ -256,6 +259,28 @@ void World::loadObjectLayer(const tmx::Layer::Ptr &layer) {
             });
 
             _player->setVisible(object.visible());
+
+            for (const auto & proportie : object.getProperties()) {
+                if (proportie.getName() == "name") _player->setName(proportie.getStringValue());
+                if (proportie.getName() == "hp") _player->setHp(proportie.getIntValue());
+            }
+
+        }
+        if (object.getName() == "player" && _second_player) {
+
+            _second_player->setPosition({
+                object.getPosition().x + object.getAABB().width / 2.0f,
+                object.getPosition().y + object.getAABB().height / 2.0f
+            });
+
+            _second_player->setHitbox({
+                object.getAABB().left,
+                object.getAABB().top,
+                object.getAABB().width,
+                object.getAABB().height
+            });
+
+            _second_player->setVisible(object.visible());
 
             for (const auto & proportie : object.getProperties()) {
                 if (proportie.getName() == "name") _player->setName(proportie.getStringValue());
