@@ -62,7 +62,7 @@ private:
     std::unique_ptr<b2World> _physics_world;
 
     Player _player;
-    Player _secondPlayer;
+    Player _second_player;
 
     Camera2D _camera;
 };

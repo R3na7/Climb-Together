@@ -57,14 +57,11 @@ void Game::initStartMenu(const std::string& background_filepath) {
     start_menu.addButton("PlayButton",play_button);
     start_menu.addButton("ExitButton",exit_button);
 
-    start_menu.setActive(true);
 }
 
 
-void initPauseMenu(const std::string& background_filepath) {
-
-}
-
-void initSettingsMenu(const std::string& background_filepath) {
+void Game::initPauseMenu(const std::string& background_filepath) {
+    const auto& background_texture = std::make_shared<Texture2D>(LoadTexture(background_filepath.c_str()));
+    _menus.insert({EMENU::PAUSE, GameMenu { background_texture } });
 
 }

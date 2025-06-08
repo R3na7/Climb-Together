@@ -118,12 +118,23 @@ void World::update() {
             std::cout << _layers[0]._grid[y * _width + x] << " ";
         }
         std::cout << "\n";
-    }    
+    }   
+
+    for(auto& rec : _game_over_recs) {
+        if( CheckCollisionPointRec(_player->getPosition(),rec) 
+            || CheckCollisionPointRec(_second_player->getPosition(),rec)) {
+                _is_finished = true;
+        }
+    }
  
     _player->update();
+    std::cout << _player->getPosition().x << " " << _player->getPosition().y << "\n";
+    std::cout << _game_over_recs[0].x << " " <<  _game_over_recs[0].y << "\n";
 
 }
-void World::reset() {}
+void World::reset() {
+    this->~World();
+}
 
 void World::addEntity(const Entity & entity) {}
 void World::addInteractiveObject(const InteractiveObject & interactive_object) {
@@ -138,7 +149,7 @@ void World::removeInteractiveObject(int id) {}
 
 void World::setPlayer(Player* player, Player* secondPlayer) {
     _player = player;
-    _secondPlayer = _secondPlayer;
+    _second_player = _second_player;
 }
 
 void World::setTileset(const Texture2D & tileset) {
@@ -209,6 +220,7 @@ void World::loadTileLayer(const tmx::Layer::Ptr &layer) {
     Layer world_layer;
     world_layer._name = tile_layer.getName();
     world_layer._is_visible = tile_layer.getVisible();
+    world_layer._properties = tile_layer.getProperties();
                 
     for (int i = 0; i < tile_layer.getTiles().size(); ++i) {
         world_layer._grid.push_back(tile_layer.getTiles()[i].ID - 1);
@@ -216,6 +228,9 @@ void World::loadTileLayer(const tmx::Layer::Ptr &layer) {
 
     if (world_layer._name == "collision") {
         loadCollisionLayer(world_layer);
+    }
+    if(world_layer._name == "gameover") {
+        loadGameOverRecs(world_layer);
     }
 
     _layers.push_back(world_layer);
@@ -289,6 +304,24 @@ void World::loadCollisionLayer(Layer &world_layer) {
                 fixture_def.friction = 0.3f;
 
                 _bodies.back()->CreateFixture(&fixture_def);
+            }
+        }
+    }
+}
+
+void World::loadGameOverRecs(Layer& world_layer) {
+    for (int y = 0; y < _height; ++y) {
+        for (int x = 0; x < _width; ++x) {
+            if (world_layer._grid[y * _width + x] != -1) {
+                Rectangle rec = {
+                    (x+1)*_tile_size / physics_scale,
+                    (y+1)*_tile_size / physics_scale,
+                    _tile_size / physics_scale,
+                    _tile_size /physics_scale                      
+            
+                };
+                
+                _game_over_recs.push_back(rec);
             }
         }
     }

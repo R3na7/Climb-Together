@@ -59,13 +59,15 @@ private:
     void loadTileLayer(const tmx::Layer::Ptr & layer);
     void loadObjectLayer(const tmx::Layer::Ptr & layer);
     void loadCollisionLayer(Layer & layer);
+    void loadGameOverRecs(Layer& layer);
 
     std::vector<std::unique_ptr<Entity>> _entities;
     std::vector<b2Body*> _bodies;
+    std::vector<Rectangle> _game_over_recs;
 
     std::vector<InteractiveObject> _interactiv_objects;
     Player* _player;
-    Player* _secondPlayer;
+    Player* _second_player;
 
     std::vector<Layer> _layers;
     std::vector<Tile> _tiles;
@@ -85,6 +87,7 @@ private:
     struct Layer {
         std::vector<int> _grid;
         std::string _name;
+        std::vector<tmx::Property> _properties;
         bool _is_visible;
     };
 

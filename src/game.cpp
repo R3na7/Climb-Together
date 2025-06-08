@@ -8,20 +8,20 @@ Game::Game() :
     _window_height(GetScreenHeight()),
     _currentMenu(EMENU::START),
     _player({LoadTexture(RES_PATH"StandingUp.png")}),
-    _secondPlayer({LoadTexture(RES_PATH"player.png")}) {
+    _second_player({LoadTexture(RES_PATH"player.png")}) {
     SetTargetFPS(120);
     
     
     initStartMenu(RES_PATH"example.jpg");
+    initPauseMenu(RES_PATH"example.jpg");
     
-    b2Vec2 gravity(0.0f, 0.1f);
+    b2Vec2 gravity(0.0f, 1.0f);
     _physics_world = std::make_unique<b2World>(gravity);
     _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
-    _player.scale(Vector2{10,10});
 
-    _secondPlayer.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
+    _second_player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
 
-    _world.setPlayer(&_player, &_secondPlayer);    
+    _world.setPlayer(&_player, &_second_player);    
     _world.initPhysics(_physics_world.get());
     _world.initWorld(RES_PATH"gora.tmx");
 
@@ -46,28 +46,45 @@ void Game::start() {
 
 void Game::update() {
 
-    _physics_world->Step(1.0f / 60.0f, 8, 3);
-    _world.update();
+    // _physics_world->Step(1.0f / 60.0f, 8, 3);
+    // _world.update();
 
     _window_width = GetScreenWidth();
     _window_height = GetScreenHeight();
+
+    if(IsKeyPressed(KEY_ESCAPE)) {
+        if(_currentMenu == EMENU::PAUSE)
+            _currentMenu = EMENU::NONE;
+        else
+            _currentMenu = EMENU::PAUSE;
+    }
     
     if(_currentMenu != EMENU::NONE) {
         updateMenu();
     }
     else {
-        _physics_world->Step(1.0f / 60.0f, 8, 3);
 
-        _world.update();
+        if(!_world.isFinished()) {
+            _physics_world->Step(1.0f / 60.0f, 8, 3);
 
-        _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
+            _world.update();
+
+            _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
+            
+            playerHandleInput();
         
-        playerHandleInput();
-       
-        _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
+            _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
+            
+        }
+        else {
+            _world.reset();
+            _currentMenu = _currentMenu = EMENU::START;
+        }
 
 
     }
+
+    
 
 }
 
@@ -129,6 +146,8 @@ void Game::playerHandleInput() {
     if (IsKeyDown(KEY_LEFT)) {
         velocity_x = -5.0f;
     }
+
+
     
     // Применяем силу для движения
     float velChange = velocity_x - vel.x;
@@ -139,22 +158,24 @@ void Game::playerHandleInput() {
 
 
 void Game::updateMenu() {
+    GameMenu& current_menu = _menus.at(_currentMenu);
+
     switch (_currentMenu) {
     case EMENU::START: {
-        GameMenu& start_menu = _menus.at(_currentMenu);
-        start_menu.update();
+        current_menu.update();
 
-        Button& play_button = start_menu.getButton("PlayButton");
+        Button& play_button = current_menu.getButton("PlayButton");
         play_button.setSize(Vector2{ _window_width / 4, _window_height / 4});
         play_button.setPosition(Vector2{98,100});
 
-        Button& exit_button = start_menu.getButton("ExitButton");
+        Button& exit_button = current_menu.getButton("ExitButton");
         exit_button.setSize(Vector2{ _window_width / 4, _window_height / 4});
         exit_button.setPosition(Vector2{100,play_button.getSize().y + 100});
         break;
     }
 
     case EMENU::PAUSE: {
+        current_menu.update();
         break;
     }
 
