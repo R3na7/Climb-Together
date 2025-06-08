@@ -47,20 +47,20 @@ void Entity::render() const {
     );
 
     // Отладочная информация (опционально)
-    if (0) {
-        // Красный круг в центре позиции
-        DrawCircleV({screen_x, screen_y}, 5.0f, RED);
+    // if (0) {
+    //     // Красный круг в центре позиции
+    //     DrawCircleV({screen_x, screen_y}, 5.0f, RED);
         
-        // Текст с координатами
-        std::string coord_text = "x: " + std::to_string(_position.x) + " y: " + std::to_string(_position.y);
-        DrawText(
-            coord_text.c_str(), 
-            screen_x + 20,  // Смещаем текст вправо от объекта
-            screen_y - 20,  // И немного вверх
-            20,             // Размер шрифта
-            RED
-        );
-    }
+    //     // Текст с координатами
+    //     std::string coord_text = "x: " + std::to_string(_position.x) + " y: " + std::to_string(_position.y);
+    //     DrawText(
+    //         coord_text.c_str(), 
+    //         screen_x + 20,  // Смещаем текст вправо от объекта
+    //         screen_y - 20,  // И немного вверх
+    //         20,             // Размер шрифта
+    //         RED
+    //     );
+    // }
 }
 
 void Entity::updateAnimation() {

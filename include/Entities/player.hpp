@@ -18,6 +18,7 @@ public:
     const std::string & getName() const;
     int getHp() const;
 
+    void render() const;
     void interact();
 
 private:

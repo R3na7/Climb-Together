@@ -7,25 +7,27 @@ Game::Game() :
     _window_width(GetScreenWidth()),
     _window_height(GetScreenHeight()),
     _currentMenu(EMENU::START),
-    _player({LoadTexture(RES_PATH"player.png")}) {
+    _player({LoadTexture(RES_PATH"StandingUp.png")}),
+    _secondPlayer({LoadTexture(RES_PATH"player.png")}) {
     SetTargetFPS(120);
     
     
     initStartMenu(RES_PATH"example.jpg");
     
-    b2Vec2 gravity(0.0f, 9.8f);
+    b2Vec2 gravity(0.0f, 0.1f);
     _physics_world = std::make_unique<b2World>(gravity);
-    
     _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
+    _player.scale(Vector2{10,10});
 
-    _world.setPlayer(&_player);    
+    _secondPlayer.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
+
+    _world.setPlayer(&_player, &_secondPlayer);    
     _world.initPhysics(_physics_world.get());
-    _world.initWorld(RES_PATH"testWorld.tmx");
+    _world.initWorld(RES_PATH"gora.tmx");
 
     _camera = { 0 };
-    _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
     _camera.rotation = 0.0f;
-    _camera.zoom = 1.0f;
+    _camera.zoom = 5.0f;
 
 
     
@@ -55,31 +57,15 @@ void Game::update() {
     }
     else {
         _physics_world->Step(1.0f / 60.0f, 8, 3);
+
         _world.update();
 
         _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
         
-        if (IsKeyDown(KEY_UP)) {
-            _camera.zoom *= 1.1f;
-        }
-        if (IsKeyDown(KEY_DOWN)) {
-            _camera.zoom *= 0.9f;
-        }
+        playerHandleInput();
+       
+        _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
 
-        b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
-        float desiredVel = 0;
-        
-        if (IsKeyDown(KEY_RIGHT)) {
-            desiredVel = 5.0f; // Скорость движения
-        }
-        if (IsKeyDown(KEY_LEFT)) {
-            desiredVel = -5.0f;
-        }
-        
-        // Применяем силу для движения
-        float velChange = desiredVel - vel.x;
-        float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
-        _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
 
     }
 
@@ -106,29 +92,48 @@ void Game::playerHandleInput() {
     Vector2 velocity = _player.getVelocity();
 
     Vector2 start_position = _player.getPosition();
+
+    b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
+    float velocity_x = 0;
+    float velocity_y = 0;
     
-    if (IsKeyDown(KEY_A)) 
-    {
-        _player.move(-velocity.x, 0.0f);
-    }
-    if (IsKeyDown(KEY_D)) 
-    {
-        _player.move(velocity.x, 0.0f);
-    }
-    if (IsKeyDown(KEY_W)) 
-    {
-        _player.move(0.0f, -velocity.y);
-    }
-    if (IsKeyDown(KEY_S)) 
-    {
-        _player.move(0.0f, velocity.y);
-    }
+    // if (IsKeyDown(KEY_A)) 
+    // {
+    //     _player.move(-velocity.x, 0.0f);
+    // }
+    // if (IsKeyDown(KEY_D)) 
+    // {
+    //     _player.move(velocity.x, 0.0f);
+    // }
+    // if (IsKeyDown(KEY_W)) 
+    // {
+    //     _player.move(0.0f, -velocity.y);
+    // }
+    // if (IsKeyDown(KEY_S)) 
+    // {
+    //     _player.move(0.0f, velocity.y);
+    // }
+
     if (IsKeyDown(KEY_UP)) {
-        _camera.zoom += 1.0f;
+        _camera.zoom *= 1.1f;
     }
     if (IsKeyDown(KEY_DOWN)) {
-        _camera.zoom -= 1.0f;
+        _camera.zoom *= 0.9f;
     }
+
+
+    
+    if (IsKeyDown(KEY_RIGHT)) {
+        velocity_x = 5.0f; // Скорость движения
+    }
+    if (IsKeyDown(KEY_LEFT)) {
+        velocity_x = -5.0f;
+    }
+    
+    // Применяем силу для движения
+    float velChange = velocity_x - vel.x;
+    float force = _player.getPhysicsBody()->GetMass() * velChange / (1/60.0f); // F = mv/t
+    _player.getPhysicsBody()->ApplyForce(b2Vec2(force, 0), _player.getPhysicsBody()->GetWorldCenter(), true);
 
 }
 
