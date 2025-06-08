@@ -6,9 +6,7 @@
 #include <iostream>
 
 bool World::initWorld(const std::string& filename) {
-
-    try
-    {
+    try {
         _is_finished = false;
 
         tmx::Map map;
@@ -36,13 +34,11 @@ bool World::initWorld(const std::string& filename) {
             } 
         }
     }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
+    catch(const std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }   
 
     return true;
-
 }
 
 void World::render() const {
@@ -120,8 +116,7 @@ void World::update() {
         std::cout << "\n";
     }    
  
-    _player->update();
-
+    // _player->update();
 }
 void World::reset() {}
 
@@ -149,7 +144,12 @@ void World::setFinished(bool _finished) {
     _is_finished = _finished;
 }
 
-
+Vector2 World::getWorldCenter() const {
+    return {
+        static_cast<float>(_width * _tile_size) / 2.0f,
+        static_cast<float>(_height * _tile_size) / 2.0f
+    };
+}
 const World::Layer & World::getLayer(const std::string & name) const {
 
     // std::find(_layers.begin(), _layers.end(), [name](const World::Layer & layer){
@@ -164,12 +164,103 @@ const Texture2D &          World::getTileset()          const { return _tileset;
 const std::string &        World::getName()             const { return _name;    }
 const std::vector<Sound> & World::getBackgroundSounds() const { return _background_sounds; }
 
+std::vector<std::unique_ptr<Entity>> &World::getEntityes() {
+    return _entities;
+}
+
 bool World::isFinished() const { return _is_finished; }
 
 void World::initPhysics(b2World* world) {
     _physics_world = world;
+}
 
-    
+void World::loadMapProperties(const tmx::Map &map) {
+    _width = map.getTileCount().x;
+    _height = map.getTileCount().y;
+
+    for (const auto & propertie : map.getProperties()) {
+        if (propertie.getName() == "name") _name = propertie.getStringValue(); 
+    }
+}
+
+void World::parsingTile(const std::vector<tmx::Tileset> &tilesets)
+{
+    _tiles.resize(tilesets[0].getTileCount());
+    for (auto & tile : tilesets[0].getTiles()) {
+
+        auto& worldTile = _tiles[tile.ID];
+        worldTile._id = tile.ID;
+        worldTile._source_rec = {
+            static_cast<float>(tile.imagePosition.x),
+            static_cast<float>(tile.imagePosition.y),
+            static_cast<float>(tilesets[0].getTileSize().x),
+            static_cast<float>(tilesets[0].getTileSize().y)
+        };
+
+        for (const auto & obj : tile.objectGroup.getObjects()) {
+            if (obj.getShape() == tmx::Object::Shape::Polygon) {
+
+           }
+        }
+    }
+}
+
+void World::loadTileLayer(const tmx::Layer::Ptr &layer) {
+    const auto & tile_layer = layer->getLayerAs<tmx::TileLayer>();
+                
+    Layer world_layer;
+    world_layer._name = tile_layer.getName();
+    world_layer._is_visible = tile_layer.getVisible();
+                
+    for (int i = 0; i < tile_layer.getTiles().size(); ++i) {
+        world_layer._grid.push_back(tile_layer.getTiles()[i].ID - 1);
+    }
+
+    if (world_layer._name == "collision") {
+        loadCollisionLayer(world_layer);
+    }
+
+    _layers.push_back(world_layer);
+}
+
+void World::loadObjectLayer(const tmx::Layer::Ptr &layer) {
+    const auto & objectGroup = layer->getLayerAs<tmx::ObjectGroup>();
+
+    for (const auto & object : objectGroup.getObjects()) {
+                    
+        if (object.getName() == "player" && _player) {
+
+            _player->setPosition({
+                object.getPosition().x + object.getAABB().width / 2.0f,
+                object.getPosition().y + object.getAABB().height / 2.0f
+            });
+
+            _player->setHitbox({
+                object.getAABB().left,
+                object.getAABB().top,
+                object.getAABB().width,
+                object.getAABB().height
+            });
+
+            _player->setVisible(object.visible());
+
+            for (const auto & proportie : object.getProperties()) {
+                if (proportie.getName() == "name") _player->setName(proportie.getStringValue());
+                if (proportie.getName() == "hp") _player->setHp(proportie.getIntValue());
+            }
+
+        }
+
+        if (object.getName() == "entity") {
+
+
+        }
+
+        if (object.getType() == "interactive_object") {
+
+        }
+                    
+    }
 }
 
 void World::loadMapProperties(const tmx::Map &map) {
@@ -293,3 +384,4 @@ void World::loadCollisionLayer(Layer &world_layer) {
         }
     }
 }
+

@@ -9,13 +9,15 @@ Game::Game() :
     _currentMenu(EMENU::START),
     _player({LoadTexture(RES_PATH"StandingUp.png")}),
     _secondPlayer({LoadTexture(RES_PATH"player.png")}) {
+
+{
     SetTargetFPS(120);
-    
     
     initStartMenu(RES_PATH"example.jpg");
     
     b2Vec2 gravity(0.0f, 0.1f);
     _physics_world = std::make_unique<b2World>(gravity);
+
     _player.createPhysicsBody(_physics_world.get(), b2_dynamicBody);
     _player.scale(Vector2{10,10});
 
@@ -29,7 +31,9 @@ Game::Game() :
     _camera.rotation = 0.0f;
     _camera.zoom = 5.0f;
 
+    auto& entityes = _world.getEntityes();
 
+    //entityes.push_back(std::make_unique<Entity>({LoadTexture(RES_PATH"cube.png")}));
     
     
 }
@@ -52,7 +56,7 @@ void Game::update() {
     _window_width = GetScreenWidth();
     _window_height = GetScreenHeight();
     
-    if(_currentMenu != EMENU::NONE) {
+    if(0) {
         updateMenu();
     }
     else {
@@ -60,11 +64,13 @@ void Game::update() {
 
         _world.update();
 
-        _camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
+        //_camera.target = { _player.getPosition().x * physics_scale, _player.getPosition().y * physics_scale};
         
+
         playerHandleInput();
        
         _camera.offset = (Vector2){ _window_width/2.0f, _window_height/2.0f };
+
 
 
     }
@@ -74,12 +80,11 @@ void Game::update() {
 void Game::render() {
     BeginDrawing();
     ClearBackground(BLACK); 
-    if(_currentMenu != EMENU::NONE) {
+    if(0) {
         _menus.at(_currentMenu).render();
     }
     else {
         BeginMode2D(_camera);  // Начинаем режим 2D с камерой
-
         _world.render(); 
         EndMode2D();          // Заканчиваем режим 2D
     }
@@ -89,13 +94,15 @@ void Game::render() {
 }
 
 void Game::playerHandleInput() {
-    Vector2 velocity = _player.getVelocity();
+    // Vector2 velocity = _player.getVelocity();
+
 
     Vector2 start_position = _player.getPosition();
 
     b2Vec2 vel = _player.getPhysicsBody()->GetLinearVelocity();
     float velocity_x = 0;
     float velocity_y = 0;
+
     
     // if (IsKeyDown(KEY_A)) 
     // {
@@ -120,6 +127,7 @@ void Game::playerHandleInput() {
     if (IsKeyDown(KEY_DOWN)) {
         _camera.zoom *= 0.9f;
     }
+
 
 
     

@@ -26,7 +26,6 @@ bool Player::isWASDKeysdown() const {
 
 void Player::render() const {
     
-    
 
     
     if(isWASDKeysdown()) {
@@ -90,8 +89,6 @@ void Player::render() const {
             WHITE
         );
     }
-
-
 }
 
 void Player::setName(const std::string & name) {

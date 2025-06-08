@@ -75,4 +75,11 @@
 11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11
 </data>
  </layer>
+ <objectgroup id="4" name="objects">
+  <object id="1" name="entity" x="150.253" y="92.7046">
+   <properties>
+    <property name="texture" value="cube.png"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
